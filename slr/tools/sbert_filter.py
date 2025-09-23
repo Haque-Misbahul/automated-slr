@@ -17,6 +17,6 @@ class SBERTScorer:
         pairs.sort(key=lambda x: x[1], reverse=True)
         return pairs
 
-    def filter(self, seed: str, candidates: List[str], threshold: float = 0.62) -> List[Tuple[str, float]]:
+    def filter(self, seed: str, candidates: List[str], threshold: float = 0.65) -> List[Tuple[str, float]]:
         pairs = self.score(seed, candidates)
         return [(c, s) for c, s in pairs if s >= threshold]
