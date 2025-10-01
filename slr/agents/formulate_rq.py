@@ -22,13 +22,17 @@ Requirements:
 - Mix types: effectiveness/impact, comparison, context-specific, measurement/metrics, challenges/trade-offs.
 - Keep each RQ < 25 words, precise and answerable.
 - If some PICOC facets are empty, omit them naturally.
-- NO prose, NO numbering. Return STRICT JSON:
+- Return STRICT JSON only:
 
 {{
   "rqs": [
     "RQ1 text ...",
     "RQ2 text ...",
-    "... up to 7"
+    "RQ3 text ...",
+    "RQ4 text ...",
+    "RQ5 text ...",
+    "RQ6 text ...",
+    "RQ7 text ..."
   ],
   "notes": "1–2 sentences on scope/assumptions (optional)"
 }}
@@ -43,7 +47,7 @@ def _extract_json(text: str) -> Dict[str, Any]:
     return json.loads(m.group(0))
 
 def formulate_rqs_from_picoc(picoc: Dict[str, str], max_rqs: int = 7) -> Dict[str, Any]:
-    """Return dict: {"rqs": [...], "notes": "..."}"""
+    """Return dict: {"rqs": [...], "notes": "..."} (aim for 5–7 RQs)."""
     llm = LLMClient(model="gpt-oss-120b")
     u = USER_TMPL.format(
         population=picoc.get("population",""),
@@ -55,6 +59,6 @@ def formulate_rqs_from_picoc(picoc: Dict[str, str], max_rqs: int = 7) -> Dict[st
     raw = llm.chat(system=SYSTEM, user=u)
     data = _extract_json(raw)
     rqs: List[str] = [s.strip() for s in data.get("rqs", []) if isinstance(s, str) and s.strip()]
-    # normalize length / count
+    # normalize length / count to max 7
     rqs = rqs[:max_rqs]
-    return {"rqs": rqs, "notes": data.get("notes", "").strip()}
+    return {"rqs": rqs, "notes": (data.get("notes", "") or "").strip()}

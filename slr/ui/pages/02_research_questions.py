@@ -36,7 +36,7 @@ st.markdown("---")
 # ---------- Generate / edit RQs ----------
 st.subheader("Draft Research Questions")
 
-if st.button("Generate RQs from current PICOC", use_container_width=True):
+if st.button("Generate 5–7 RQs from current PICOC", use_container_width=True):
     with st.spinner("Drafting research questions from PICOC..."):
         try:
             payload = formulate_rqs_from_picoc(ai_picoc, max_rqs=7)
