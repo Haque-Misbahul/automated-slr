@@ -3,7 +3,7 @@
 
 cd automated-slr
 source .venv/bin/activate
-export KISTE_API_KEY="Wy5rbxmAB3Pc_XPhkWaJpT4rjUM8k4qcPFA4fzU3kWw"
+export KISTE_API_KEY="Wy5ybxmAB3Pc_XPhkWaJpT4rjUM8k4qcPFA4fzU3kWw"
 streamlit run picoc_synonyms.py
 
 Run/install/test Python code.
