@@ -3,20 +3,23 @@ from __future__ import annotations
 import os
 from typing import Optional
 from openai import OpenAI
+from dotenv import load_dotenv   # <-- NEW
+
+# automatically load .env file if it exists
+load_dotenv()
 
 BASE_URL = "https://kiste.informatik.tu-chemnitz.de/v1"
-MODEL = "glm-4.5-air"  # professor: only use this model
+MODEL = "glm-4.5-air"  # default model
 
 def _get_api_key() -> str:
     key = os.getenv("KISTE_API_KEY")
     if not key:
-        raise RuntimeError("Set env var KISTE_API_KEY with your API key")
+        raise RuntimeError("Set KISTE_API_KEY in your environment or in a .env file")
     return key
 
 class LLMClient:
     """
     Minimal wrapper for an OpenAI-compatible endpoint.
-    IMPORTANT: no temperature / no max_tokens (per professor).
     """
     def __init__(self,
                  api_key: Optional[str] = None,
@@ -31,6 +34,5 @@ class LLMClient:
             model=self.model,
             messages=[{"role": "system", "content": system},
                       {"role": "user", "content": user}]
-            # NOTE: no temperature, no max_tokens
         )
         return resp.choices[0].message.content.strip()
