@@ -6,3 +6,4 @@ sentence-transformers
 
 numpy<2
 torch==2.2.2
+openai>=1.40.0
