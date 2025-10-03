@@ -1,9 +1,20 @@
+# Core framework
+streamlit>=1.36.0
+
+# Environment & HTTP
 python-dotenv>=1.0.1
 requests>=2.32.0
-streamlit>=1.36.0
-nltk
-sentence-transformers
 
+# NLP + Embeddings
+nltk>=3.9
+sentence-transformers>=2.2.2
+
+# ML / Deep Learning
 numpy<2
 torch==2.2.2
 openai>=1.40.0
+
+# Visualization
+graphviz>=0.20.3
+plotly>=5.22.0
+kaleido>=0.2.1
