@@ -86,9 +86,17 @@ inject_css()
 
 st.markdown("<h2 style='margin-top:25px;'>🧩 Planning • Step 1: Define PICOC & Synonyms (AI)</h2>", unsafe_allow_html=True)
 
-# --- SBERT score control (only new UI element; default 0.70) ---
-sbert_min = st.slider("SBERT minimum similarity (cosine)", 0.40, 0.95, 0.70, 0.01,
-                      help="Only synonyms with cosine similarity ≥ this value will be shown.")
+# put this near the top (after inject_css), to set a first-time default
+if "sbert_min" not in st.session_state:
+    st.session_state["sbert_min"] = 0.50  # <- desired default
+
+# slider with an explicit key and using the session default
+sbert_min = st.slider(
+    "SBERT minimum similarity (cosine)",
+    0.30, 0.95, st.session_state["sbert_min"], 0.01,
+    key="sbert_min",
+    help="Only synonyms with cosine similarity ≥ this value will be shown."
+)
 
 # ---------------- Topic input ----------------
 topic = st.text_input(
