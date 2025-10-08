@@ -1,20 +1,43 @@
-# Core framework
-streamlit>=1.36.0
+# ============================================================
+# Core Web App Framework
+# ============================================================
+streamlit>=1.36.0         # UI framework for the SLR tool
 
-# Environment & HTTP
-python-dotenv>=1.0.1
-requests>=2.32.0
+# ============================================================
+# Environment & HTTP Utilities
+# ============================================================
+python-dotenv>=1.0.1      # For .env configuration loading
+requests>=2.32.0          # For HTTP requests to APIs
 
+# ============================================================
 # NLP + Embeddings
-nltk>=3.9
-sentence-transformers>=2.2.2
+# ============================================================
+nltk>=3.9                 # Tokenization / stopword removal
+sentence-transformers>=2.2.2  # For embedding generation
 
-# ML / Deep Learning
-numpy<2
-torch==2.2.2
-openai>=1.40.0
+# ============================================================
+# ML / Deep Learning Backend
+# ============================================================
+numpy<2                   # Avoid NumPy 2.x incompatibility
+torch==2.2.2              # Required for sentence-transformers
+openai>=1.40.0            # OpenAI API client for LLM calls
 
-# Visualization
-graphviz>=0.20.3
-plotly>=5.22.0
-kaleido>=0.2.1
+# ============================================================
+# Visualization & Graphs
+# ============================================================
+graphviz>=0.20.3          # Taxonomy tree diagrams
+plotly>=5.22.0            # Interactive charts (treemap, sunburst)
+kaleido>=0.2.1            # Static Plotly image export
+
+# ============================================================
+# DataFrame Compatibility Layer
+# (added during Plotly/Narwhals fix investigation)
+# ============================================================
+pandas>=2.0.0             # Core DataFrame library
+narwhals>=1.10.0          # Used internally by Plotly for Pandas/Polars bridge
+
+# ============================================================
+# Optional Utilities / Local Dev
+# ============================================================
+tqdm>=4.66.0              # Progress bars (useful for SLR pipeline)
+pyarrow>=16.0.0           # For Parquet or Arrow data support

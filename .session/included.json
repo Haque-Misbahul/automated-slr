@@ -1,0 +1,357 @@
+[
+  {
+    "paper_id": "",
+    "title": "Comparison of parallel sorting algorithms",
+    "abstract": "In our study we implemented and compared seven sequential and parallel\nsorting algorithms: bitonic sort, multistep bitonic sort, adaptive bitonic\nsort, merge sort, quicksort, radix sort and sample sort. Sequential algorithms\nwere implemented on a central processing unit using C++, whereas parallel\nalgorithms were implemented on a graphics processing unit using CUDA platform.\nWe chose these algorithms because to the best of our knowledge their sequential\nand parallel implementations were not yet compared all together in the same\nexecution environment. We improved the above mentioned implementations and\nadopted them to be able to sort input sequences of arbitrary length. We\ncompared algorithms on six different input distributions, which consisted of\n32-bit numbers, 32-bit key-value pairs, 64-bit numbers and 64-bit key-value\npairs. In this report we give a short description of seven sorting algorithms\nand all the results obtained by our tests.",
+    "categories": "cs.DC",
+    "url": "http://arxiv.org/abs/1511.03404v2",
+    "year": 2015,
+    "authors": [
+      "Darko Bozidar",
+      "Tomaz Dobravec"
+    ],
+    "published": "2015-11-11",
+    "updated": ""
+  },
+  {
+    "paper_id": "",
+    "title": "A Creativity Survey of Parallel Sorting Algorithm",
+    "abstract": "Sorting is one of the most fundamental problems in the field of computer\nscience. With the rapid development of manycore processors, it shows great\nimportance to design efficient parallel sort algorithm on manycore\narchitecture. This paper studies the parallel memory sorting method on modern\nhardware, and summarizes its research status and progress. Classify the\nresearch problems, research methods and measurement methods of the target\npapers and references. In the end, we summarize all the researches and list the\ndirections not researched and innovative places. Keywords: Sorting Algorithm,\nParallel Algorithm, Parallel Optimization, CPU, GPU, Memory Hierarchy",
+    "categories": "cs.DC",
+    "url": "http://arxiv.org/abs/2202.08463v1",
+    "year": 2022,
+    "authors": [
+      "Tianyi Yu",
+      "Wei Li"
+    ],
+    "published": "2022-02-17",
+    "updated": ""
+  },
+  {
+    "paper_id": "",
+    "title": "A Load-Balanced Parallel and Distributed Sorting Algorithm Implemented\n  with PGX.D",
+    "abstract": "Sorting has been one of the most challenging studied problems in different\nscientific researches. Although many techniques and algorithms have been\nproposed on the theory of having efficient parallel sorting implementation,\nhowever achieving desired performance on different types of the architectures\nwith large number of processors is still a challenging issue. Maximizing\nparallelism level in applications can be achieved by minimizing overheads due\nto load imbalance and waiting time due to memory latencies. In this paper, we\npresent a distributed sorting algorithm implemented in PGX.D, a fast\ndistributed graph processing system, which outperforms the Spark's distributed\nsorting implementation by around 2x-3x by hiding communication latencies and\nminimizing unnecessary overheads. Furthermore, it shows that the proposed PGX.D\nsorting method handles dataset containing many duplicated data entries\nefficiently and always results in keeping balanced workloads for different\ninput data distribution types.",
+    "categories": "cs.DC",
+    "url": "http://arxiv.org/abs/1611.00463v2",
+    "year": 2016,
+    "authors": [
+      "Zahra Khatami",
+      "Sungpack Hong",
+      "Jinsoo Lee",
+      "Siegfried Depner",
+      "Hassan Chafi",
+      "J. Ramanujam",
+      "Hartmut Kaiser"
+    ],
+    "published": "2016-11-02",
+    "updated": ""
+  },
+  {
+    "paper_id": "",
+    "title": "Cache Analysis of Non-uniform Distribution Sorting Algorithms",
+    "abstract": "We analyse the average-case cache performance of distribution sorting\nalgorithms in the case when keys are independently but not necessarily\nuniformly distributed. The analysis is for both `in-place' and `out-of-place'\ndistribution sorting algorithms and is more accurate than the analysis\npresented in \\cite{RRESA00}. In particular, this new analysis yields tighter\nupper and lower bounds when the keys are drawn from a uniform distribution.\n  We use this analysis to tune the performance of the integer sorting algorithm\nMSB radix sort when it is used to sort independent uniform floating-point\nnumbers (floats). Our tuned MSB radix sort algorithm comfortably outperforms a\ncache-tuned implementations of bucketsort \\cite{RR99} and Quicksort when\nsorting uniform floats from $[0, 1)$.",
+    "categories": "cs.DS",
+    "url": "http://arxiv.org/abs/0706.2839v2",
+    "year": 2007,
+    "authors": [
+      "Naila Rahman",
+      "Rajeev Raman"
+    ],
+    "published": "2007-06-19",
+    "updated": ""
+  },
+  {
+    "paper_id": "",
+    "title": "Practical Massively Parallel Sorting",
+    "abstract": "Previous parallel sorting algorithms do not scale to the largest available\nmachines, since they either have prohibitive communication volume or\nprohibitive critical path length. We describe algorithms that are a viable\ncompromise and overcome this gap both in theory and practice. The algorithms\nare multi-level generalizations of the known algorithms sample sort and\nmultiway mergesort. In particular our sample sort variant turns out to be very\nscalable. Some tools we develop may be of independent interest -- a simple,\npractical, and flexible sorting algorithm for small inputs working in\nlogarithmic time, a near linear time optimal algorithm for solving a\nconstrained bin packing problem, and an algorithm for data delivery, that\nguarantees a small number of message startups on each processor.",
+    "categories": "cs.DS",
+    "url": "http://arxiv.org/abs/1410.6754v2",
+    "year": 2014,
+    "authors": [
+      "Michael Axtmann",
+      "Timo Bingmann",
+      "Peter Sanders",
+      "Christian Schulz"
+    ],
+    "published": "2014-10-24",
+    "updated": ""
+  },
+  {
+    "paper_id": "",
+    "title": "Robust Massively Parallel Sorting",
+    "abstract": "We investigate distributed memory parallel sorting algorithms that scale to\nthe largest available machines and are robust with respect to input size and\ndistribution of the input elements. The main outcome is that four sorting\nalgorithms cover the entire range of possible input sizes. For three algorithms\nwe devise new low overhead mechanisms to make them robust with respect to\nduplicate keys and skewed input distributions. One of these, designed for\nmedium sized inputs, is a new variant of quicksort with fast high-quality pivot\nselection.\n  At the same time asymptotic analysis provides performance guarantees and\nguides the selection and configuration of the algorithms. We validate these\nhypotheses using extensive experiments on 7 algorithms, 10 input distributions,\nup to 262144 cores, and varying input sizes over 9 orders of magnitude. For\ndifficult input distributions, our algorithms are the only ones that work at\nall. For all but the largest input sizes, we are the first to perform\nexperiments on such large machines at all and our algorithms significantly\noutperform the ones one would conventionally have considered.",
+    "categories": "cs.DC",
+    "url": "http://arxiv.org/abs/1606.08766v4",
+    "year": 2016,
+    "authors": [
+      "Michael Axtmann",
+      "Peter Sanders"
+    ],
+    "published": "2016-06-28",
+    "updated": ""
+  },
+  {
+    "paper_id": "",
+    "title": "Hourglass Sorting: A novel parallel sorting algorithm and its\n  implementation",
+    "abstract": "Sorting is one of the fundamental problems in computer science. Playing a\nrole in many processes, it has a lower complexity bound imposed by\n$\\mathcal{O}(n\\log{n})$ when executing on a sequential machine. This limit can\nbe brought down to sub-linear times thanks to parallelization techniques that\nincrease the number of comparisons done in parallel. This, however, increases\nthe cost of implementation, which limits the application of such techniques.\nMoreover, as the size of the arrays increases, a bottleneck arises in moving\nthe vast quantities of data required at the input, and generated at the output\nof such sorter. This might impose time requirements much stricter than those of\nthe sorting itself. In this paper, a novel parallel sorter is proposed for the\nspecific case where the input is parallel, but the output is serial. The design\nis then implemented and verified on an FPGA within the context of a quantum\nLDPC decoder. A latency of $\\log{n}$ is achieved for the output of the first\nelement, after which the rest stream out for a total sorting time of\n$n+\\log{n}$. Contrary to other parallel sorting methods, clock speed does not\ndegrade with $n$, and resources scale linearly with input size.",
+    "categories": "cs.AR",
+    "url": "http://arxiv.org/abs/2507.16326v1",
+    "year": 2025,
+    "authors": [
+      "Daniel Bascones",
+      "Borja Morcillo"
+    ],
+    "published": "2025-07-22",
+    "updated": ""
+  },
+  {
+    "paper_id": "",
+    "title": "Parallel External Sorting of ASCII Records Using Learned Models",
+    "abstract": "External sorting is at the core of many operations in large-scale database\nsystems, such as ordering and aggregation queries for large result sets,\nbuilding indexes, sort-merge joins, duplicate removal, sharding, and record\nclustering. Unlike in-memory sorting, these algorithms need to work together\nwith the OS and the filesystem to efficiently utilize system resources and\nminimize disk I/O.\n  In this paper we describe ELSAR: a parallel external sorting algorithm that\nuses an innovative paradigm based on a learned data distribution model. The\nalgorithm leverages the model to arrange the input records into mutually\nexclusive, monotonic, and equi-depth partitions that, once sorted, can simply\nbe concatenated to form the output. This method completely eliminates the need\nfor multi-way file merging, which is typically used in external sorting.\n  We present thorough benchmarks for uniform and skewed datasets in various\nstorage media, where we measure the sorting rates, size scalability, and energy\nefficiency of ELSAR and other sorting algorithms. We observed that ELSAR has up\nto 1.65x higher sorting rates than the next-best external sort (Nsort) on SSD\ndrives and 5.31x higher than the GNU coreutils' sort utility on Intel Optane\nnon-volatile memory. In addition, ELSAR supersedes the current winner of the\nSortBenchmark for the most energy-efficient external string sorting algorithm\nby an impressive margin of 41%.\n  These results reinforce the premise that novel learning-enhanced algorithms\ncan provide remarkable performance benefits over traditional ones.",
+    "categories": "cs.DB",
+    "url": "http://arxiv.org/abs/2305.05671v1",
+    "year": 2023,
+    "authors": [
+      "Ani Kristo",
+      "Tim Kraska"
+    ],
+    "published": "2023-05-08",
+    "updated": ""
+  },
+  {
+    "paper_id": "",
+    "title": "A Sorting Algorithm Based on Calculation",
+    "abstract": "This article introduces an adaptive sorting algorithm that can relocate\nelements accurately by substituting their values into a function which we name\nit the guessing function. We focus on building this function which is the\nmapping relationship between record values and their corresponding sorted\nlocations essentially. The time complexity of this algorithm O(n),when records\ndistributed uniformly. Additionally, similar approach can be used in the\nsearching algorithm.",
+    "categories": "cs.DS",
+    "url": "http://arxiv.org/abs/cs/0508125v1",
+    "year": 2005,
+    "authors": [
+      "Sheng Bao",
+      "De-Shun Zheng"
+    ],
+    "published": "2005-08-29",
+    "updated": ""
+  },
+  {
+    "paper_id": "",
+    "title": "An $O(N)$ Sorting Algorithm: Machine Learning Sort",
+    "abstract": "We propose an $O(N\\cdot M)$ sorting algorithm by Machine Learning method,\nwhich shows a huge potential sorting big data. This sorting algorithm can be\napplied to parallel sorting and is suitable for GPU or TPU acceleration.\nFurthermore, we discuss the application of this algorithm to sparse hash table.",
+    "categories": "cs.LG",
+    "url": "http://arxiv.org/abs/1805.04272v2",
+    "year": 2018,
+    "authors": [
+      "Hanqing Zhao",
+      "Yuehan Luo"
+    ],
+    "published": "2018-05-11",
+    "updated": ""
+  },
+  {
+    "paper_id": "",
+    "title": "Random Shuffling to Reduce Disorder in Adaptive Sorting Scheme",
+    "abstract": "In this paper we present a random shuffling scheme to apply with adaptive\nsorting algorithms. Adaptive sorting algorithms utilize the presortedness\npresent in a given sequence. We have probabilistically increased the amount of\npresortedness present in a sequence by using a random shuffling technique that\nrequires little computation. Theoretical analysis suggests that the proposed\nscheme can improve the performance of adaptive sorting. Experimental results\nshow that it significantly reduces the amount of disorder present in a given\nsequence and improves the execution time of adaptive sorting algorithm as well.",
+    "categories": "cs.DS",
+    "url": "http://arxiv.org/abs/cs/0012002v1",
+    "year": 2000,
+    "authors": [
+      "Md. Enamul Karim",
+      "Abdun Naser Mahmood"
+    ],
+    "published": "2000-12-02",
+    "updated": ""
+  },
+  {
+    "paper_id": "",
+    "title": "On Compressing Permutations and Adaptive Sorting",
+    "abstract": "Previous compact representations of permutations have focused on adding a\nsmall index on top of the plain data $<\\pi(1), \\pi(2),...\\pi(n)>$, in order to\nefficiently support the application of the inverse or the iterated permutation.\n  In this paper we initiate the study of techniques that exploit the\ncompressibility of the data itself, while retaining efficient computation of\n$\\pi(i)$ and its inverse.\n  In particular, we focus on exploiting {\\em runs}, which are subsets\n(contiguous or not) of the domain where the permutation is monotonic.\n  Several variants of those types of runs arise in real applications such as\ninverted indexes and suffix arrays.\n  Furthermore, our improved results on compressed data structures for\npermutations also yield better adaptive sorting algorithms.",
+    "categories": "cs.DS",
+    "url": "http://arxiv.org/abs/1108.4408v1",
+    "year": 2011,
+    "authors": [
+      "Jérémy Barbay",
+      "Gonzalo Navarro"
+    ],
+    "published": "2011-08-22",
+    "updated": ""
+  },
+  {
+    "paper_id": "",
+    "title": "Performance Evaluation of Parallel Sortings on the Supercomputer Fugaku",
+    "abstract": "Sorting is one of the most basic algorithms, and developing highly parallel\nsorting programs is becoming increasingly important in high-performance\ncomputing because the number of CPU cores per node in modern supercomputers\ntends to increase. In this study, we have implemented two multi-threaded\nsorting algorithms based on samplesort and compared their performance on the\nsupercomputer Fugaku. The first algorithm divides an input sequence into\nmultiple blocks, sorts each block, and then selects pivots by sampling from\neach block at regular intervals. Each block is then partitioned using the\npivots, and partitions in different blocks are merged into a single sorted\nsequence. The second algorithm differs from the first one in only selecting\npivots, where the binary search is used to select pivots such that the number\nof elements in each partition is equal. We compare the performance of the two\nalgorithms with different sequential sorting and multiway merging algorithms.\nWe demonstrate that the second algorithm with BlockQuicksort (a quicksort\naccelerated by reducing conditional branches) for sequential sorting and the\nselection tree for merging shows consistently high speed and high parallel\nefficiency for various input data types and data sizes.",
+    "categories": "cs.DC",
+    "url": "http://arxiv.org/abs/2305.05245v1",
+    "year": 2023,
+    "authors": [
+      "Tomoyuki Tokuue",
+      "Tomoaki Ishiyama"
+    ],
+    "published": "2023-05-09",
+    "updated": ""
+  },
+  {
+    "paper_id": "",
+    "title": "LRM-Trees: Compressed Indices, Adaptive Sorting, and Compressed\n  Permutations",
+    "abstract": "LRM-Trees are an elegant way to partition a sequence of values into sorted\nconsecutive blocks, and to express the relative position of the first element\nof each block within a previous block. They were used to encode ordinal trees\nand to index integer arrays in order to support range minimum queries on them.\nWe describe how they yield many other convenient results in a variety of areas,\nfrom data structures to algorithms: some compressed succinct indices for range\nminimum queries; a new adaptive sorting algorithm; and a compressed succinct\ndata structure for permutations supporting direct and indirect application in\ntime all the shortest as the permutation is compressible.",
+    "categories": "cs.DS",
+    "url": "http://arxiv.org/abs/1009.5863v1",
+    "year": 2010,
+    "authors": [
+      "Jérémy Barbay",
+      "Johannes Fischer"
+    ],
+    "published": "2010-09-29",
+    "updated": ""
+  },
+  {
+    "paper_id": "",
+    "title": "Optimal Round and Sample-Size Complexity for Partitioning in Parallel\n  Sorting",
+    "abstract": "State-of-the-art parallel sorting algorithms for distributed-memory\narchitectures are based on computing a balanced partitioning via sampling and\nhistogramming. By finding samples that partition the sorted keys into\nevenly-sized chunks, these algorithms minimize the number of communication\nrounds required. Histogramming (computing positions of samples) guides\nsampling, enabling a decrease in the overall number of samples collected. We\nderive lower and upper bounds on the number of sampling/histogramming rounds\nrequired to compute a balanced partitioning. We improve on prior results to\ndemonstrate that when using $p$ processors, $O(\\log^* p)$ rounds with\n$O(p/\\log^* p)$ samples per round suffice. We match that with a lower bound\nthat shows that any algorithm with $O(p)$ samples per round requires at least\n$\\Omega(\\log^* p)$ rounds. Additionally, we prove the $\\Omega(p \\log p)$\nsamples lower bound for one round, thus proving that existing one round\nalgorithms: sample sort, AMS sort and HSS have optimal sample size complexity.\nTo derive the lower bound, we propose a hard randomized input distribution and\napply classical results from the distribution theory of runs.",
+    "categories": "cs.DC",
+    "url": "http://arxiv.org/abs/2204.04599v6",
+    "year": 2022,
+    "authors": [
+      "Wentao Yang",
+      "Vipul Harsh",
+      "Edgar Solomonik"
+    ],
+    "published": "2022-04-10",
+    "updated": ""
+  },
+  {
+    "paper_id": "",
+    "title": "Leyenda: An Adaptive, Hybrid Sorting Algorithm for Large Scale Data with\n  Limited Memory",
+    "abstract": "Sorting is the one of the fundamental tasks of modern data management\nsystems. With Disk I/O being the most-accused performance bottleneck and more\ncomputation-intensive workloads, it has come to our attention that in\nheterogeneous environment, performance bottleneck may vary among different\ninfrastructure. As a result, sort kernels need to be adaptive to changing\nhardware conditions. In this paper, we propose Leyenda, a hybrid, parallel and\nefficient Radix Most-Significant-Bit (MSB) MergeSort algorithm, with\nutilization of local thread-level CPU cache and efficient disk/memory I/O.\nLeyenda is capable of performing either internal or external sort efficiently,\nbased on different I/O and processing conditions. We benchmarked Leyenda with\nthree different workloads from Sort Benchmark, targeting three unique use\ncases, including internal, partially in-memory and external sort, and we found\nLeyenda to outperform GNU's parallel in-memory quick/merge sort implementations\nby up to three times. Leyenda is also ranked the second best external sort\nalgorithm on ACM 2019 SIGMOD programming contest and forth overall.",
+    "categories": "cs.DB",
+    "url": "http://arxiv.org/abs/1909.08006v1",
+    "year": 2019,
+    "authors": [
+      "Yuanjing Shi",
+      "Zhaoxing Li"
+    ],
+    "published": "2019-09-17",
+    "updated": ""
+  },
+  {
+    "paper_id": "",
+    "title": "Parallel Sorting System for Objects",
+    "abstract": "Conventional sorting algorithms make use of such data structures as array,\nfile and list which define access methods of the items to be sorted. Such\ntraditional methods as exchange sort, divide and conquer sort, selection sort\nand insertion sort require supervisory control program. The supervisory control\nprogram has access to the items and is responsible for arranging them in the\nproper order. This paper presents a different sorting algorithm that does not\nrequire supervisory control program. The objects sort themselves and they are\nable to terminate when sorting is completed. The algorithm also employs\nparallel processing mechanisms to increase its efficiency and effectiveness.\nThe paper makes a review of the traditional sorting methods, identifying their\npros and cons and proposes a different design based on conceptual combination\nof these algorithms. Algorithms designed were implemented and tested in Java\ndesktop application",
+    "categories": "cs.DC",
+    "url": "http://arxiv.org/abs/1209.3050v1",
+    "year": 2012,
+    "authors": [
+      "Samuel King Opoku"
+    ],
+    "published": "2012-09-13",
+    "updated": ""
+  },
+  {
+    "paper_id": "",
+    "title": "A Randomised Approach to Distributed Sorting",
+    "abstract": "We introduce and analyse a new, extremely simple, randomised sorting\nalgorithm:\n  - choose a pair of indices $\\{i, j\\}$ according to some distribution $q$;\n  - sort the elements in positions $i$ and $j$ of the array in ascending order.\n  Choosing $q_{\\{i,j\\}} \\propto 1/|j - i|$ yields an order-$n (\\log n)^2$\nsorting time. We call it the harmonic sorter.\n  The sorter trivially parallelises in the asynchronous setting, yielding a\nlinear speed-up. We also exhibit a low-communication, synchronous version with\na linear speed-up.\n  We compare and contrast this algorithm with other sorters, and discuss some\nof its benefits, particularly its robustness and amenability to parallelisation\nand distributed computing.",
+    "categories": "cs.DS",
+    "url": "http://arxiv.org/abs/2502.05082v1",
+    "year": 2025,
+    "authors": [
+      "Sam Olesker-Taylor"
+    ],
+    "published": "2025-02-07",
+    "updated": ""
+  },
+  {
+    "paper_id": "",
+    "title": "An Agglomeration Law for Sorting Networks and its Application in\n  Functional Programming",
+    "abstract": "In this paper we will present a general agglomeration law for sorting\nnetworks. Agglomeration is a common technique when designing parallel\nprogrammes to control the granularity of the computation thereby finding a\nbetter fit between the algorithm and the machine on which the algorithm runs.\nUsually this is done by grouping smaller tasks and computing them en bloc\nwithin one parallel process. In the case of sorting networks this could be done\nby computing bigger parts of the network with one process. The agglomeration\nlaw in this paper pursues a different strategy: The input data is grouped and\nthe algorithm is generalized to work on the agglomerated input while the\noriginal structure of the algorithm remains. This will result in a new access\nopportunity to sorting networks well-suited for efficient parallelization on\nmodern multicore computers, computer networks or GPGPU programming.\nAdditionally this enables us to use sorting networks as (parallel or\ndistributed) merging stages for arbitrary sorting algorithms, thereby creating\nnew hybrid sorting algorithms with ease. The expressiveness of functional\nprogramming languages helps us to apply this law to systematically constructed\nsorting networks, leading to efficient and easily adaptable sorting algorithms.\nAn application example is given, using the Eden programming language to show\nthe effectiveness of the law. The implementation is compared with different\nparallel sorting algorithms by runtime behaviour.",
+    "categories": "cs.DS",
+    "url": "http://arxiv.org/abs/1701.00635v1",
+    "year": 2017,
+    "authors": [
+      "Lukas Immanuel Schiller"
+    ],
+    "published": "2017-01-03",
+    "updated": ""
+  },
+  {
+    "paper_id": "",
+    "title": "Parallel String Sample Sort",
+    "abstract": "We discuss how string sorting algorithms can be parallelized on modern\nmulti-core shared memory machines. As a synthesis of the best sequential string\nsorting algorithms and successful parallel sorting algorithms for atomic\nobjects, we propose string sample sort. The algorithm makes effective use of\nthe memory hierarchy, uses additional word level parallelism, and largely\navoids branch mispredictions. Additionally, we parallelize variants of multikey\nquicksort and radix sort that are also useful in certain situations.",
+    "categories": "cs.DS",
+    "url": "http://arxiv.org/abs/1305.1157v1",
+    "year": 2013,
+    "authors": [
+      "Timo Bingmann",
+      "Peter Sanders"
+    ],
+    "published": "2013-05-06",
+    "updated": ""
+  },
+  {
+    "paper_id": "",
+    "title": "Engineering Parallel String Sorting",
+    "abstract": "We discuss how string sorting algorithms can be parallelized on modern\nmulti-core shared memory machines. As a synthesis of the best sequential string\nsorting algorithms and successful parallel sorting algorithms for atomic\nobjects, we first propose string sample sort. The algorithm makes effective use\nof the memory hierarchy, uses additional word level parallelism, and largely\navoids branch mispredictions. Then we focus on NUMA architectures, and develop\nparallel multiway LCP-merge and -mergesort to reduce the number of random\nmemory accesses to remote nodes. Additionally, we parallelize variants of\nmultikey quicksort and radix sort that are also useful in certain situations.\nComprehensive experiments on five current multi-core platforms are then\nreported and discussed. The experiments show that our implementations scale\nvery well on real-world inputs and modern machines.",
+    "categories": "cs.DS",
+    "url": "http://arxiv.org/abs/1403.2056v1",
+    "year": 2014,
+    "authors": [
+      "Timo Bingmann",
+      "Andreas Eberle",
+      "Peter Sanders"
+    ],
+    "published": "2014-03-09",
+    "updated": ""
+  },
+  {
+    "paper_id": "",
+    "title": "QuickXsort: Efficient Sorting with n log n - 1.399n +o(n) Comparisons on\n  Average",
+    "abstract": "In this paper we generalize the idea of QuickHeapsort leading to the notion\nof QuickXsort. Given some external sorting algorithm X, QuickXsort yields an\ninternal sorting algorithm if X satisfies certain natural conditions.\n  With QuickWeakHeapsort and QuickMergesort we present two examples for the\nQuickXsort-construction. Both are efficient algorithms that incur approximately\nn log n - 1.26n +o(n) comparisons on the average. A worst case of n log n +\nO(n) comparisons can be achieved without significantly affecting the average\ncase.\n  Furthermore, we describe an implementation of MergeInsertion for small n.\nTaking MergeInsertion as a base case for QuickMergesort, we establish a\nworst-case efficient sorting algorithm calling for n log n - 1.3999n + o(n)\ncomparisons on average. QuickMergesort with constant size base cases shows the\nbest performance on practical inputs: when sorting integers it is slower by\nonly 15% to STL-Introsort.",
+    "categories": "cs.DS",
+    "url": "http://arxiv.org/abs/1307.3033v1",
+    "year": 2013,
+    "authors": [
+      "Stefan Edelkamp",
+      "Armin Weiß"
+    ],
+    "published": "2013-07-11",
+    "updated": ""
+  },
+  {
+    "paper_id": "",
+    "title": "Using parallelism techniques to improve sequential and multi-core\n  sorting performance",
+    "abstract": "We propose new sequential sorting operations by adapting techniques and\nmethods used for designing parallel sorting algorithms. Although the norm is to\nparallelize a sequential algorithm to improve performance, we adapt a\ncontrarian approach: we employ parallel computing techniques to speed up\nsequential sorting. Our methods can also work for multi-core sorting with minor\nadjustments that do not necessarily require full parallelization of the\noriginal sequential algorithm. The proposed approach leads to the development\nof asymptotically efficient deterministic and randomized sorting operations\nwhose practical sequential and multi-core performance, as witnessed by an\nexperimental study, matches or surpasses existing optimized sorting algorithm\nimplementations.\n  We utilize parallel sorting techniques such as deterministic regular sampling\nand random oversampling. We extend the notion of deterministic regular sampling\ninto deterministic regular oversampling for sequential and multi-core sorting\nand demonstrate its potential. We then show how these techniques can be used\nfor sequential sorting and also lead to better multi-core sorting algorithm\nperformance as witnessed by the undertaken experimental study.",
+    "categories": "cs.DS",
+    "url": "http://arxiv.org/abs/1608.08648v1",
+    "year": 2016,
+    "authors": [
+      "Alexandros V Gerbessiotis"
+    ],
+    "published": "2016-08-30",
+    "updated": ""
+  },
+  {
+    "paper_id": "",
+    "title": "The Geometry of Tree-Based Sorting",
+    "abstract": "We study the connections between sorting and the binary search tree (BST)\nmodel, with an aim towards showing that the fields are connected more deeply\nthan is currently appreciated. While any BST can be used to sort by inserting\nthe keys one-by-one, this is a very limited relationship and importantly says\nnothing about parallel sorting. We show what we believe to be the first formal\nrelationship between the BST model and sorting. Namely, we show that a large\nclass of sorting algorithms, which includes mergesort, quicksort, insertion\nsort, and almost every instance-optimal sorting algorithm, are equivalent in\ncost to offline BST algorithms. Our main theoretical tool is the geometric\ninterpretation of the BST model introduced by Demaine et al., which finds an\nequivalence between searches on a BST and point sets in the plane satisfying a\ncertain property. To give an example of the utility of our approach, we\nintroduce the log-interleave bound, a measure of the information-theoretic\ncomplexity of a permutation $\\pi$, which is within a $\\lg \\lg n$ multiplicative\nfactor of a known lower bound in the BST model; we also devise a parallel\nsorting algorithm with polylogarithmic span that sorts a permutation $\\pi$\nusing comparisons proportional to its log-interleave bound. Our aforementioned\nresult on sorting and offline BST algorithms can be used to show existence of\nan offline BST algorithm whose cost is within a constant factor of the\nlog-interleave bound of any permutation $\\pi$.",
+    "categories": "cs.DS",
+    "url": "http://arxiv.org/abs/2110.11836v2",
+    "year": 2021,
+    "authors": [
+      "Guy Blelloch",
+      "Magdalen Dobson"
+    ],
+    "published": "2021-10-22",
+    "updated": ""
+  },
+  {
+    "paper_id": "",
+    "title": "Equivalence between Priority Queues and Sorting in External Memory",
+    "abstract": "A priority queue is a fundamental data structure that maintains a dynamic\nordered set of keys and supports the followig basic operations: insertion of a\nkey, deletion of a key, and finding the smallest key. The complexity of the\npriority queue is closely related to that of sorting: A priority queue can be\nused to implement a sorting algorithm trivially. Thorup\n\\cite{thorup2007equivalence} proved that the converse is also true in the RAM\nmodel. In particular, he designed a priority queue that uses the sorting\nalgorithm as a black box, such that the per-operation cost of the priority\nqueue is asymptotically the same as the per-key cost of sorting. In this paper,\nwe prove an analogous result in the external memory model, showing that\npriority queues are computationally equivalent to sorting in external memory,\nunder some mild assumptions. The reduction provides a possibility for proving\nlower bounds for external sorting via showing a lower bound for priority\nqueues.",
+    "categories": "cs.DS",
+    "url": "http://arxiv.org/abs/1207.4383v1",
+    "year": 2012,
+    "authors": [
+      "Zhewei Wei",
+      "Ke Yi"
+    ],
+    "published": "2012-07-18",
+    "updated": ""
+  }
+]
