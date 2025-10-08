@@ -30,7 +30,7 @@ class LLMClient:
                         {"role": "system", "content": system},
                         {"role": "user", "content": user},
                     ],
-                    temperature=0.2,         # stable taxonomy
+                   # temperature=0.2,         # stable taxonomy
                     stream=False,
                     timeout=request_timeout, # httpx param
                 )

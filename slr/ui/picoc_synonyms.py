@@ -84,7 +84,7 @@ def inject_css():
 
 inject_css()
 
-st.markdown("<h2 style='margin-top:25px;'>🧩 Planning • Step 1: Define PICOC & Synonyms (AI)</h2>", unsafe_allow_html=True)
+st.markdown("<h2 style='margin-top:25px;'>Planning • Step 1: Define PICOC & Synonyms (AI)</h2>", unsafe_allow_html=True)
 
 # put this near the top (after inject_css), to set a first-time default
 if "sbert_min" not in st.session_state:
