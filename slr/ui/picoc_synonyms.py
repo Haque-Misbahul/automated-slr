@@ -62,6 +62,14 @@ def _sbert_filter(
     return [(t, s) for (t, s) in pairs if s >= float(min_score)]
 # ==============================================================================
 
+# --- PICOC short definitions for hover help icons ---
+PICOC_HELP = {
+    "Population":   "What is being studied (subjects/artifacts/datasets).",
+    "Intervention": "Technique or approach under study (the thing you apply).",
+    "Comparison":   "Baselines or alternatives used for comparison.",
+    "Outcome":      "Measures/effects to evaluate (e.g., accuracy, runtime).",
+    "Context":      "Setting or environment (domain, platform, constraints).",
+}
 
 # ---------------- UI setup ----------------
 st.set_page_config(page_title="Planning → Step 1: PICOC & Synonyms", layout="wide")
@@ -80,6 +88,15 @@ def inject_css():
       div[data-testid="stVerticalBlock"] {gap: .4rem !important;}
       label[data-baseweb="checkbox"] {font-size: 0.92rem;}
       h1, h2, h3 {margin-bottom: .4rem;}
+      /* tiny help button that looks like an icon */
+      .help-btn button[disabled][data-testid="baseButton-secondary"]{
+        background: transparent; border: none; padding: 0; margin: 0;
+        font-size: 16px; line-height: 1; color: #6b7280;  /* slate-500 */
+        cursor: help;
+      }
+      .help-btn button[disabled][data-testid="baseButton-secondary"]:hover{
+        color: #374151; /* slate-700 */
+      }
     </style>""", unsafe_allow_html=True)
 
 inject_css()
@@ -104,6 +121,13 @@ topic = st.text_input(
     value=st.session_state.get("topic", ""),
     placeholder="e.g., LLM-based code review automation in software engineering",
 )
+
+# small helper to render a tooltip icon
+def info_icon(help_text: str, key: str):
+    # disabled button with built-in tooltip; styled tiny via CSS
+    st.markdown('<div class="help-btn" style="text-align:right;">', unsafe_allow_html=True)
+    st.button("ⓘ", key=key, help=help_text or "", disabled=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------------- Generate PICOC + synonyms ----------------
 if st.button("Generate PICOC & Synonyms (AI)", use_container_width=True):
@@ -157,19 +181,15 @@ if ai_picoc and ai_syns_original:
         return hashlib.sha1(txt.encode("utf-8")).hexdigest()[:8]
     key_suffix = topic_key_suffix(st.session_state.get("topic", ""))
 
-    # ---- SBERT-verified synonyms (only change) ----
-    # We filter ai_syns_original facet-by-facet using SBERT against the facet's PICOC text,
-    # with the full PICOC+topic as semantic context. Only terms with score >= sbert_min survive.
+    # ---- SBERT-verified synonyms (only change to data flow is filtering) ----
     context_text = _picoc_context_str(ai_picoc, st.session_state.get("topic", ""))
 
     def sbert_verify_facet(facet_name: str, base_text: str, items: list[str]) -> list[str]:
         if not items:
             return []
         scored = _sbert_filter(base_text, items, context=context_text, min_score=float(sbert_min))
-        # keep only terms (we don't display scores in this UI)
         return [t for (t, _) in scored]
 
-    # Build filtered dict (without mutating the original one in session)
     ai_syns_filtered = {
         "Population":   sbert_verify_facet("Population",   ai_picoc.get("population", ""),   ai_syns_original.get("Population", [])),
         "Intervention": sbert_verify_facet("Intervention", ai_picoc.get("intervention", ""), ai_syns_original.get("Intervention", [])),
@@ -178,7 +198,7 @@ if ai_picoc and ai_syns_original:
         "Context":      sbert_verify_facet("Context",      ai_picoc.get("context", ""),      ai_syns_original.get("Context", [])),
     }
 
-    # Synonyms with checkboxes (curation) — SAME UI as before, just using filtered terms
+    # Synonyms with checkboxes (curation) — SAME UI, with help icon in header
     st.subheader("Facet-wise synonyms (select what to keep)")
     prev_sel = st.session_state.get("selected_synonyms", {})
 
@@ -203,6 +223,14 @@ if ai_picoc and ai_syns_original:
     for facet in ("Population", "Intervention", "Comparison", "Outcome", "Context"):
         items = ai_syns_filtered.get(facet, [])
         with st.expander(f"{facet} ({len(items)} terms)", expanded=True):
+            # header row with text on left and a tooltip icon aligned right
+            hdr_left, hdr_right = st.columns([1, 0.06])
+            with hdr_left:
+                st.markdown(f"**{facet}**", help=PICOC_HELP.get(facet, ""))
+            with hdr_right:
+                info_icon(PICOC_HELP.get(facet, ""), key=f"help_{facet}_{key_suffix}")
+
+            # existing checklist body
             curated[facet] = checklist(facet, items)
 
     st.session_state["ai_syns"] = ai_syns_filtered            # filtered copy for downstream
