@@ -73,10 +73,11 @@ with preset_cols[2]:
 selected = st.multiselect(
     "arXiv categories",
     options=all_codes,
-    default=saved_cats or ["cs.SE", "cs.LG"],  # sensible default
+    default=saved_cats or all_codes,  # <- preselect everything on first load
     format_func=lambda c: f"{c} — {code_to_label.get(c, c)}",
     help="Pick one or more categories relevant to your SLR scope.",
 )
+
 
 # optional notes / justification (good for protocol)
 st.subheader("Rationale / notes (optional)")
