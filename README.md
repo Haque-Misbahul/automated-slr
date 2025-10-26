@@ -97,8 +97,8 @@ automated-slr/
 
 cd automated-slr
 source .venv/bin/activate
-streamlit run slr/ui/picoc_synonyms.py
 export KISTE_API_KEY="Wy5ybxmAB3Pc_XPhkWaJpT4rjUM8k4qcPFA4fzU3kWw"
+streamlit run slr/ui/picoc_synonyms.py
 
 
 Run/install/test Python code.
