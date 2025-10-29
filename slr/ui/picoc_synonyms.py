@@ -75,39 +75,113 @@ PICOC_HELP = {
 st.set_page_config(page_title="Planning → Step 1: PICOC & Synonyms", layout="wide")
 
 def inject_css():
+    # load existing style files if you already have them
     for css_name in ("styles.css", "style.css"):
         css_path = os.path.join(os.path.dirname(__file__), css_name)
         if os.path.exists(css_path):
             with open(css_path, "r", encoding="utf-8") as f:
                 st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-            return
+            # don't return yet — we'll still inject our overrides below
+            break
+
+    # IMPORTANT PART:
+    # we now style .block-container itself (this is Streamlit's main content wrapper)
     st.markdown("""
     <style>
-      .block-container {padding-top: 0.8rem; padding-bottom: 0.8rem;}
-      section[data-testid="stSidebar"] {padding-top: .5rem;}
-      div[data-testid="stVerticalBlock"] {gap: .4rem !important;}
-      label[data-baseweb="checkbox"] {font-size: 0.92rem;}
-      h1, h2, h3 {margin-bottom: .4rem;}
+      /* Center the whole main content area and limit width */
+      .block-container {
+        max-width: 1100px;      /* <-- adjust this number to control page width */
+        padding-top: 0.8rem;
+        padding-bottom: 0.8rem;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      /* Sidebar spacing */
+      section[data-testid="stSidebar"] {
+        padding-top: .5rem;
+      }
+
+            /* Sidebar styling */
+        section[data-testid="stSidebar"] {
+        padding-top: 1rem;
+        padding-left: 0.8rem;
+        padding-right: 0.8rem;
+        background-color: #E6F2FF;           /* light sky blue background */
+        border-right: 1px solid #B3D8FF;     /* matching soft blue border */
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.03); /* gentle shadow for depth */
+        }
+
+        /* Sidebar text */
+        section[data-testid="stSidebar"] * {
+        font-size: 1rem !important;          /* slightly larger text */
+        color: #0F172A !important;           /* dark navy for readability */
+        font-weight: 500;                    /* medium weight for clarity */
+        }
+
+        /* Sidebar hover effect for items (optional, subtle) */
+        section[data-testid="stSidebar"] a:hover {
+        background-color: #D0E8FF !important; /* light blue hover highlight */
+        border-radius: 6px;
+        color: #0F172A !important;
+        transition: background-color 0.2s ease;
+        }
+
+
+                
+
+      /* Reduce vertical gaps between stacked blocks */
+      div[data-testid="stVerticalBlock"] {
+        gap: .4rem !important;
+      }
+
+      /* Checkbox label size a little smaller */
+      label[data-baseweb="checkbox"] {
+        font-size: 0.92rem;
+      }
+
+      /* Compact headings */
+      h1, h2, h3 {
+        margin-bottom: .4rem;
+      }
+
+      /* Make facet headers a little lighter hint below title */
+      .facet-hint-line {
+        font-size: 0.8rem;
+        color: #6b7280;
+        margin-top: -0.4rem;
+        margin-bottom: 0.4rem;
+      }
+
       /* tiny help button that looks like an icon */
       .help-btn button[disabled][data-testid="baseButton-secondary"]{
-        background: transparent; border: none; padding: 0; margin: 0;
-        font-size: 16px; line-height: 1; color: #6b7280;  /* slate-500 */
+        background: transparent;
+        border: none;
+        padding: 0;
+        margin: 0;
+        font-size: 16px;
+        line-height: 1;
+        color: #6b7280;  /* slate-500 */
         cursor: help;
       }
       .help-btn button[disabled][data-testid="baseButton-secondary"]:hover{
         color: #374151; /* slate-700 */
       }
-    </style>""", unsafe_allow_html=True)
+    </style>
+    """, unsafe_allow_html=True)
 
 inject_css()
 
-st.markdown("<h2 style='margin-top:25px;'>Planning • Step 1: Define PICOC & Synonyms (AI)</h2>", unsafe_allow_html=True)
+# --- page title ---
+st.markdown(
+    "<h2 style='margin-top:25px;'>Planning • Step 1: Define PICOC & Synonyms (AI)</h2>",
+    unsafe_allow_html=True
+)
 
-# put this near the top (after inject_css), to set a first-time default
+# --- SBERT slider default ---
 if "sbert_min" not in st.session_state:
-    st.session_state["sbert_min"] = 0.50  # <- desired default
+    st.session_state["sbert_min"] = 0.31  # default cosine threshold you want
 
-# slider with an explicit key and using the session default
 sbert_min = st.slider(
     "SBERT minimum similarity (cosine)",
     0.30, 0.95, st.session_state["sbert_min"], 0.01,
@@ -122,9 +196,8 @@ topic = st.text_input(
     placeholder="e.g., LLM-based code review automation in software engineering",
 )
 
-# small helper to render a tooltip icon
+# helper to render a tooltip icon
 def info_icon(help_text: str, key: str):
-    # disabled button with built-in tooltip; styled tiny via CSS
     st.markdown('<div class="help-btn" style="text-align:right;">', unsafe_allow_html=True)
     st.button("ⓘ", key=key, help=help_text or "", disabled=True)
     st.markdown('</div>', unsafe_allow_html=True)
@@ -153,7 +226,6 @@ ai_picoc = st.session_state.get("ai_picoc")
 ai_syns_original = st.session_state.get("ai_syns_original")
 
 def _picoc_context_str(picoc: dict, topic_text: str) -> str:
-    # Rich context improves SBERT precision; keep deterministic order
     parts = [
         f"Topic: {topic_text or ''}",
         f"Population: {picoc.get('population','')}",
@@ -165,7 +237,7 @@ def _picoc_context_str(picoc: dict, topic_text: str) -> str:
     return " | ".join([p for p in parts if p and not p.endswith(': ')])
 
 if ai_picoc and ai_syns_original:
-    # PICOC preview (unchanged)
+    # PICOC preview
     st.subheader("PICOC")
     col1, col2 = st.columns(2)
     with col1:
@@ -176,18 +248,23 @@ if ai_picoc and ai_syns_original:
         st.write(f"**Outcome:** {ai_picoc.get('outcome','')}")
         st.write(f"**Context:** {ai_picoc.get('context','')}")
 
-    # helper for stable widget keys per topic (prevents checkbox resets)
+    # stable key suffix for checkboxes so they don't reset every rerun
     def topic_key_suffix(txt: str) -> str:
         return hashlib.sha1(txt.encode("utf-8")).hexdigest()[:8]
     key_suffix = topic_key_suffix(st.session_state.get("topic", ""))
 
-    # ---- SBERT-verified synonyms (only change to data flow is filtering) ----
+    # SBERT-verified synonyms
     context_text = _picoc_context_str(ai_picoc, st.session_state.get("topic", ""))
 
     def sbert_verify_facet(facet_name: str, base_text: str, items: list[str]) -> list[str]:
         if not items:
             return []
-        scored = _sbert_filter(base_text, items, context=context_text, min_score=float(sbert_min))
+        scored = _sbert_filter(
+            base_text,
+            items,
+            context=context_text,
+            min_score=float(sbert_min)
+        )
         return [t for (t, _) in scored]
 
     ai_syns_filtered = {
@@ -198,7 +275,6 @@ if ai_picoc and ai_syns_original:
         "Context":      sbert_verify_facet("Context",      ai_picoc.get("context", ""),      ai_syns_original.get("Context", [])),
     }
 
-    # Synonyms with checkboxes (curation) — SAME UI, with help icon in header
     st.subheader("Facet-wise synonyms (select what to keep)")
     prev_sel = st.session_state.get("selected_synonyms", {})
 
@@ -206,7 +282,7 @@ if ai_picoc and ai_syns_original:
         if not items:
             st.info(f"No terms passed SBERT ≥ {sbert_min:.2f} for **{facet}**.")
             return []
-        cols = st.columns(4)  # compact 4-up grid
+        cols = st.columns(4)
         selected = []
         prev = set(prev_sel.get(facet, []))
         for i, term in enumerate(items):
@@ -223,31 +299,38 @@ if ai_picoc and ai_syns_original:
     for facet in ("Population", "Intervention", "Comparison", "Outcome", "Context"):
         items = ai_syns_filtered.get(facet, [])
         with st.expander(f"{facet} ({len(items)} terms)", expanded=True):
-            # header row with text on left and a tooltip icon aligned right
-            hdr_left, hdr_right = st.columns([1, 0.06])
+            # header row
+            hdr_left, hdr_right = st.columns([1, 0.08])
             with hdr_left:
                 st.markdown(f"**{facet}**", help=PICOC_HELP.get(facet, ""))
+
+                # subtle hint under header (styled in CSS as .facet-hint-line)
+                st.markdown(
+                    f"<div class='facet-hint-line'>{PICOC_HELP.get(facet, '')}</div>",
+                    unsafe_allow_html=True
+                )
             with hdr_right:
                 info_icon(PICOC_HELP.get(facet, ""), key=f"help_{facet}_{key_suffix}")
 
-            # existing checklist body
             curated[facet] = checklist(facet, items)
 
-    st.session_state["ai_syns"] = ai_syns_filtered            # filtered copy for downstream
+    st.session_state["ai_syns"] = ai_syns_filtered
     st.session_state["selected_synonyms"] = curated
+
     st.markdown("---")
     st.write("**Selected counts:**", {k: len(v) for k, v in curated.items()})
 
-    # Export curated synonyms + PICOC (for later pages)
+    # Export curated synonyms + PICOC
     payload = {
         "topic": st.session_state.get("topic", ""),
         "picoc": ai_picoc,
-        "synonyms_all": ai_syns_original,      # original (unfiltered)
-        "synonyms_sbert_filtered": ai_syns_filtered,  # filtered view
+        "synonyms_all": ai_syns_original,
+        "synonyms_sbert_filtered": ai_syns_filtered,
         "synonyms_selected": curated,
         "sbert_min": float(sbert_min),
         "sbert_model": DEFAULT_SBERT_MODEL,
     }
+
     st.download_button(
         "Download PICOC + curated synonyms (JSON)",
         data=json.dumps(payload, ensure_ascii=False, indent=2),
