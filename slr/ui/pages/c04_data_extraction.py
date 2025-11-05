@@ -77,11 +77,20 @@ if topic:
 
 st.markdown("<h2 style='margin-top:20px;'>🗂️ Conducting • Step 4: Data extraction</h2>", unsafe_allow_html=True)
 
-included = st.session_state.get("screened_rows", [])
+# Prefer quality-passed set; fall back to screening set or upload
+source_name = None
+included = st.session_state.get("quality_included")
 if included:
-    st.success(f"Loaded {len(included)} INCLUDED studies from session.")
+    source_name = "quality_included"
 else:
-    up_inc = st.file_uploader("Upload INCLUDED studies (CSV or JSON) exported from Step 3", type=["csv", "json"])
+    included = st.session_state.get("screened_rows", [])
+    if included:
+        source_name = "screened_rows"
+
+if included:
+    st.success(f"Loaded {len(included)} studies from session (source: **{source_name}**).")
+else:
+    up_inc = st.file_uploader("Upload INCLUDED studies (CSV or JSON)", type=["csv", "json"])
     if up_inc:
         try:
             if (getattr(up_inc, "type", "") or "").endswith("/json") or up_inc.name.lower().endswith(".json"):
@@ -95,7 +104,7 @@ else:
             st.error(f"Failed to parse included list: {e}")
 
 if not included:
-    st.info("No included studies. Finish **Conducting · Step 3** first or upload data above.")
+    st.info("No studies available. Finish **Quality assessment (AI)** (or Screening) first, or upload data above.")
     st.stop()
 
 # ---------- load extraction form schema from planning (Step 6) ----------
@@ -128,8 +137,12 @@ extracted: Dict[str, Dict] = st.session_state.get("extracted_data", {})
 # ---------- paper navigator ----------
 st.markdown("### Extract per paper")
 titles = [str(r.get("title", "")) for r in included]
+
+# keep index valid even if list size changed between runs
 if "extract_idx" not in st.session_state:
     st.session_state["extract_idx"] = 0
+else:
+    st.session_state["extract_idx"] = max(0, min(st.session_state["extract_idx"], len(included) - 1))
 
 cols_top = st.columns([5, 1, 1])
 with cols_top[0]:
@@ -234,7 +247,7 @@ with st.expander("Jump to a specific paper", expanded=False):
     target = st.selectbox("Select paper", [f"{i+1}. {titles[i][:80]}" for i in range(len(titles))], index=idx)
     jump_idx = int(target.split(".")[0]) - 1
     if st.button("Go", key="jump_btn"):
-        st.session_state["extract_idx"] = jump_idx
+        st.session_state["extract_idx"] = max(0, min(jump_idx, len(included)-1))
         force_rerun()
 
 # ---------- exports ----------
