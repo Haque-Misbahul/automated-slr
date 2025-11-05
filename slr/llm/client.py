@@ -19,21 +19,39 @@ class LLMClient:
         self.base_url = base_url or _BASE_URL
         self.client = OpenAI(api_key=self.api_key, base_url=self.base_url)
 
-    def chat(self, system: str, user: str, max_retries: int = 4, request_timeout: float = 60.0) -> str:
+    def chat(
+        self,
+        system: str,
+        user: str,
+        max_retries: int = 4,
+        request_timeout: float = 60.0,
+        # --- optional, backward-compatible knobs (ignored if None) ---
+        temperature: Optional[float] = None,
+        max_tokens: Optional[int] = None,
+        stop: Optional[object] = None,
+    ) -> str:
         """Chat with retries for flaky upstream (502/503/504)."""
         delay = 1.0
         for attempt in range(max_retries):
             try:
-                resp = self.client.chat.completions.create(
-                    model=self.model,
-                    messages=[
+                params = {
+                    "model": self.model,
+                    "messages": [
                         {"role": "system", "content": system},
                         {"role": "user", "content": user},
                     ],
-                   # temperature=0.2,         # stable taxonomy
-                    stream=False,
-                    timeout=request_timeout, # httpx param
-                )
+                    "stream": False,
+                    "timeout": request_timeout,  # httpx param
+                }
+                # only pass these if the caller provided them
+                if temperature is not None:
+                    params["temperature"] = float(temperature)
+                if max_tokens is not None:
+                    params["max_tokens"] = int(max_tokens)
+                if stop is not None:
+                    params["stop"] = stop
+
+                resp = self.client.chat.completions.create(**params)
                 return resp.choices[0].message.content or ""
             except APIStatusError as e:
                 code = getattr(e, "status_code", None)
