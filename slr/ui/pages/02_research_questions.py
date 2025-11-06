@@ -2,13 +2,16 @@ import sys, os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 
 import json
+from slr.ui.theme import inject_css
 import streamlit as st
 from slr.agents.formulate_rq import formulate_rqs_from_picoc
 
 # ---------- Page setup ----------
 st.set_page_config(page_title="Planning → Step 2: Research Questions", layout="wide")
+inject_css()
+
 st.markdown(
-    "<h2 style='margin-top:25px;'>📝 Planning • Step 2: Formulate Research Questions (from PICOC)</h2>",
+    "<h2 style='margin-top:25px;'>Planning • Step 2: Formulate Research Questions (from PICOC)</h2>",
     unsafe_allow_html=True,
 )
 

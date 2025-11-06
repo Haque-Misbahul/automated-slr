@@ -3,6 +3,7 @@ import sys, os, json, hashlib, re
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 import streamlit as st
+from slr.ui.theme import inject_css
 from slr.agents.agent import run_define_picoc
 
 # === SBERT (minimal; score-only control) ======================================
@@ -73,104 +74,7 @@ PICOC_HELP = {
 
 # ---------------- UI setup ----------------
 st.set_page_config(page_title="Planning → Step 1: PICOC & Synonyms", layout="wide")
-
-def inject_css():
-    # load existing style files if you already have them
-    for css_name in ("styles.css", "style.css"):
-        css_path = os.path.join(os.path.dirname(__file__), css_name)
-        if os.path.exists(css_path):
-            with open(css_path, "r", encoding="utf-8") as f:
-                st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-            # don't return yet — we'll still inject our overrides below
-            break
-
-    # IMPORTANT PART:
-    # we now style .block-container itself (this is Streamlit's main content wrapper)
-    st.markdown("""
-    <style>
-      /* Center the whole main content area and limit width */
-      .block-container {
-        max-width: 1100px;      /* <-- adjust this number to control page width */
-        padding-top: 0.8rem;
-        padding-bottom: 0.8rem;
-        margin-left: auto;
-        margin-right: auto;
-      }
-
-      /* Sidebar spacing */
-      section[data-testid="stSidebar"] {
-        padding-top: .5rem;
-      }
-
-            /* Sidebar styling */
-        section[data-testid="stSidebar"] {
-        padding-top: 1rem;
-        padding-left: 0.8rem;
-        padding-right: 0.8rem;
-        background-color: #E6F2FF;           /* light sky blue background */
-        border-right: 1px solid #B3D8FF;     /* matching soft blue border */
-        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.03); /* gentle shadow for depth */
-        }
-
-        /* Sidebar text */
-        section[data-testid="stSidebar"] * {
-        font-size: 1rem !important;          /* slightly larger text */
-        color: #0F172A !important;           /* dark navy for readability */
-        font-weight: 500;                    /* medium weight for clarity */
-        }
-
-        /* Sidebar hover effect for items (optional, subtle) */
-        section[data-testid="stSidebar"] a:hover {
-        background-color: #D0E8FF !important; /* light blue hover highlight */
-        border-radius: 6px;
-        color: #0F172A !important;
-        transition: background-color 0.2s ease;
-        }
-
-
-                
-
-      /* Reduce vertical gaps between stacked blocks */
-      div[data-testid="stVerticalBlock"] {
-        gap: .4rem !important;
-      }
-
-      /* Checkbox label size a little smaller */
-      label[data-baseweb="checkbox"] {
-        font-size: 0.92rem;
-      }
-
-      /* Compact headings */
-      h1, h2, h3 {
-        margin-bottom: .4rem;
-      }
-
-      /* Make facet headers a little lighter hint below title */
-      .facet-hint-line {
-        font-size: 0.8rem;
-        color: #6b7280;
-        margin-top: -0.4rem;
-        margin-bottom: 0.4rem;
-      }
-
-      /* tiny help button that looks like an icon */
-      .help-btn button[disabled][data-testid="baseButton-secondary"]{
-        background: transparent;
-        border: none;
-        padding: 0;
-        margin: 0;
-        font-size: 16px;
-        line-height: 1;
-        color: #6b7280;  /* slate-500 */
-        cursor: help;
-      }
-      .help-btn button[disabled][data-testid="baseButton-secondary"]:hover{
-        color: #374151; /* slate-700 */
-      }
-    </style>
-    """, unsafe_allow_html=True)
-
-inject_css()
+inject_css()  # shared styles for all pages
 
 # --- page title ---
 st.markdown(

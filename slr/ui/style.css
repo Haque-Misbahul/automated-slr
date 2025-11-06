@@ -15,3 +15,63 @@ h1, h2, h3 { margin-bottom: 0.4rem; }
 
 /* Optional: make expanders a bit tighter */
 details[open] > summary { margin-bottom: 0.2rem; }
+
+
+
+/* Center the main content and limit width */
+.block-container {
+  max-width: 1100px;
+  padding-top: 0.8rem;
+  padding-bottom: 0.8rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Sidebar look & spacing (blue panel) */
+section[data-testid="stSidebar"] {
+  padding-top: 1rem;
+  padding-left: 0.8rem;
+  padding-right: 0.8rem;
+  background-color: #E6F2FF;      /* light sky blue */
+  border-right: 1px solid #B3D8FF;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.03);
+}
+
+/* Sidebar text */
+section[data-testid="stSidebar"] * {
+  font-size: 1rem !important;
+  color: #0F172A !important;
+  font-weight: 500;
+}
+
+/* Sidebar hover */
+section[data-testid="stSidebar"] a:hover {
+  background-color: #D0E8FF !important;
+  border-radius: 6px;
+  color: #0F172A !important;
+  transition: background-color 0.2s ease;
+}
+
+/* Compact blocks & headings */
+div[data-testid="stVerticalBlock"] { gap: .4rem !important; }
+h1, h2, h3 { margin-bottom: .4rem; }
+
+/* Checkbox label size */
+label[data-baseweb="checkbox"] { font-size: 0.92rem; }
+
+/* Subtle hint line */
+.facet-hint-line {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-top: -0.4rem;
+  margin-bottom: 0.4rem;
+}
+
+/* Tiny help icon style (if you use it) */
+.help-btn button[disabled][data-testid="baseButton-secondary"]{
+  background: transparent; border: none; padding: 0; margin: 0;
+  font-size: 16px; line-height: 1; color: #6b7280; cursor: help;
+}
+.help-btn button[disabled][data-testid="baseButton-secondary"]:hover{
+  color: #374151;
+}
