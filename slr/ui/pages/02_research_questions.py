@@ -73,7 +73,7 @@ if "rq_notes" not in st.session_state:
 
 
 # --- 1) Generate RQs button (AI) ---
-if st.button("Generate 3–5 RQs from current PICOC + synonyms", use_container_width=True):
+if st.button("Generate 3 RQs from current PICOC + synonyms", use_container_width=True):
     with st.spinner("Drafting research questions from PICOC and curated synonyms..."):
         try:
             # Build enriched context with synonyms for better wording
@@ -85,7 +85,7 @@ if st.button("Generate 3–5 RQs from current PICOC + synonyms", use_container_w
             # (you can wire the agent to read st.session_state if you want).
             st.session_state["rq_generation_context"] = enriched_context
 
-            payload = formulate_rqs_from_picoc(ai_picoc, max_rqs=5)
+            payload = formulate_rqs_from_picoc(ai_picoc, max_rqs=3)
             # expected {"rqs": [...], "notes": "..."}
         except Exception as e:
             st.error(f"RQ generation failed: {e}")
@@ -177,20 +177,6 @@ else:
 
     st.markdown("---")
 
-    # --- 4) Global actions row ---
-    c3, c4 = st.columns(2)
-    with c3:
-        if st.button("➕ Add empty RQ"):
-            updated_rqs.append("")
-    with c4:
-        if st.button("🧹 Clear all RQs"):
-            updated_rqs = []
-
-    # --- 5) persist back to session ---
-    st.session_state["rqs"] = updated_rqs
-
-    # --- 6) Notes box (unchanged) ---
-    st.text_area("Notes (optional)", value=rq_notes, key="rq_notes", height=80)
 
     # --- 7) Downloads (unchanged) ---
     bundle = {
