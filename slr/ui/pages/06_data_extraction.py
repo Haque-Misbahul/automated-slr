@@ -3,11 +3,13 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.
 
 import json, csv, io
 import streamlit as st
+from slr.ui.theme import inject_css
 
 # ---------------- Page setup ----------------
 st.set_page_config(page_title="Planning → Step 6: Data Extraction Form", layout="wide")
+inject_css()
 st.markdown(
-    "<h2 style='margin-top:25px;'>📋 Planning • Step 6: Design the Data Extraction Form</h2>",
+    "<h2 style='margin-top:25px;'>Planning • Step 6: Design the Data Extraction Form</h2>",
     unsafe_allow_html=True,
 )
 
