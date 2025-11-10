@@ -28,8 +28,8 @@ label[data-baseweb="checkbox"] { margin-bottom: 0px !important; }
 </style>
 """, unsafe_allow_html=True)
 
-topic   = st.session_state.get("topic", "")
-picoc   = st.session_state.get("ai_picoc", {})
+topic    = st.session_state.get("topic", "")
+picoc    = st.session_state.get("ai_picoc", {})
 criteria = st.session_state.get("criteria", {})
 sources  = st.session_state.get("sources", {})
 
@@ -43,15 +43,13 @@ st.write(
     "Edit questions, set per-question weights, choose a minimum total score, and export the artifact."
 )
 
-# --------------- Defaults ---------------
+# --------------- Defaults (now 5 questions) ---------------
 DEFAULT_QS = [
     "The study clearly states its research questions/objectives.",
     "The methodology/design is adequately described for replication.",
     "The dataset/experimental setup is available or sufficiently detailed.",
-    "The study compares against appropriate baselines or alternatives.",
     "The reported results include relevant metrics with enough detail.",
     "The study discusses threats to validity or limitations.",
-    "The venue suggests peer review or the preprint shows adequate rigor.",
 ]
 
 # Load / initialize session state (working copy you can edit live)
@@ -70,7 +68,7 @@ if "qc_ws" not in st.session_state:
 
 # --------------- Scoring scheme (fixed) ---------------
 st.subheader("Scoring scheme")
-st.info("**Yes / Partial / No** (fixed): **Yes=1, Partial=0.5, No=0**. Suggested cut-off for 7 Qs (w=1): **4–5**.", icon="ℹ️")
+st.info("**Yes / Partial / No** (fixed): **Yes=1, Partial=0.5, No=0**. Suggested cut-off for 5 Qs (w=1): **3**.", icon="ℹ️")
 
 # --------------- Editable list (aligned: checkbox • question • weight radio) ---------------
 st.subheader("Checklist questions")
