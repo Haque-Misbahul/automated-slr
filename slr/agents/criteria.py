@@ -27,9 +27,11 @@ Approved terminology that the reviewers will screen for:
 - Context terms: {ctx_terms}
 
 Task:
-1. Create Inclusion criteria: short, decisive rules describing when to KEEP a study.
-2. Create Exclusion criteria: short, decisive rules describing when to DISCARD a study.
-3. Suggest a reasonable publication year range if it makes sense. Otherwise, return null for both years.
+1. Create EXACTLY 5 Inclusion criteria: short, decisive rules describing when to KEEP a study.
+2. Create EXACTLY 5 Exclusion criteria: short, decisive rules describing when to DISCARD a study.
+3. Suggest a reasonable publication year range if the topic clearly relates to recent technologies 
+   (e.g., deep learning, LLMs, cloud-native systems). Otherwise, set both years to null.
+
 
 STYLE RULES (IMPORTANT):
 - Each criterion MUST be a single short sentence or phrase (max ~15 words).
@@ -41,9 +43,11 @@ STYLE RULES (IMPORTANT):
   - "Not English" (for exclusion).
 - Tailor them to the PICOC. Mention algorithms / performance / comparison / context if relevant.
 - Avoid filler like "the study" unless needed.
+- At least some criteria MUST capture topical relevance based on the PICOC elements and terminology.
+
 
 OUTPUT FORMAT:
-Return STRICT JSON only:
+Return STRICT JSON only with EXACTLY 5 items in each list:
 
 {{
   "include": [
@@ -61,10 +65,12 @@ Return STRICT JSON only:
     "Exclusion rule 5"
   ],
   "years": {{
-    "from": 2018,
-    "to": 2025
+    "from": null,
+    "to": null
   }}
 }}
+
+
 
 If you cannot infer sensible years, set both 'from' and 'to' to null.
 """

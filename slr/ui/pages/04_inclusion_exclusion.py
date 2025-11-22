@@ -5,7 +5,7 @@ import json
 import re
 import streamlit as st
 from slr.agents.criteria import generate_criteria_from_picoc
-
+from slr.ui.theme import inject_css
 # -------- helpers --------
 
 def _shorten_rule(text: str) -> str:
@@ -58,9 +58,9 @@ def ensure_minimum(lst, minimum=5, fallback_sentence="Relevant to the defined te
 # -------- page setup --------
 
 st.set_page_config(page_title="Planning → Step 4: Inclusion / Exclusion", layout="wide")
-
+inject_css()
 st.markdown(
-    "<h2 style='margin-top:25px;'>✅ Planning • Step 4: Define Inclusion / Exclusion Criteria</h2>",
+    "<h2 style='margin-top:25px;'>Planning • Step 4: Define Inclusion / Exclusion Criteria</h2>",
     unsafe_allow_html=True,
 )
 
@@ -100,8 +100,8 @@ if topic:
     st.caption(f"Current topic: **{topic}**")
 
 st.write(
-    "We'll auto-generate draft Inclusion and Exclusion criteria based on your PICOC and approved terminology, "
-    "then you can refine them. Keep them short and actionable (screening rules)."
+    "We'll auto-generate Inclusion and Exclusion criteria based on your PICOC and "
+    "then you can refine them. Keep them short and actionable."
 )
 
 st.markdown("---")
@@ -119,13 +119,19 @@ if "criteria" not in st.session_state:
 crit_state = st.session_state["criteria"]
 
 # -------- generate draft block --------
+# (subheader optional; keep or remove as you like)
+# st.subheader("Auto-generate criteria from PICOC + synonyms ↪")
 
-st.subheader("Auto-generate criteria from PICOC + synonyms ↪")
-header_cols = st.columns([0.7, 0.3])
-with header_cols[0]:
-    st.caption("Click to draft tailored screening rules. You can still edit everything below.")
-with header_cols[1]:
-    if st.button("✨ Generate draft inclusion/exclusion now", use_container_width=True):
+# 3 columns, middle one is 3x wider → like using middle 3 of 5
+# -------- generate draft block --------
+c1, c_mid, c3 = st.columns([1, 3, 1])
+
+with c_mid:
+    if st.button(
+        " Generate draft inclusion/exclusion now",
+        use_container_width=True,
+        help="Click to generate Inclusion/Exclusion criteria",
+    ):
         with st.spinner("Generating draft criteria…"):
             try:
                 draft = generate_criteria_from_picoc(picoc, syns)
@@ -137,7 +143,7 @@ with header_cols[1]:
                     "years": {
                         "from": crit_state.get("year_from"),
                         "to": crit_state.get("year_to"),
-                    }
+                    },
                 }
 
         inc_short = _shorten_rules_list(draft.get("include", []))
@@ -155,6 +161,28 @@ with header_cols[1]:
         }
         crit_state = st.session_state["criteria"]
 
+
+st.markdown("""
+<style>
+/* Make ALL buttons on this page light sky blue + bigger label */
+div[data-testid="stButton"] button {
+    background-color: #e0f4ff !important;  /* light sky blue */
+    border-color: #b5ddff !important;      /* slightly darker border */
+}
+
+/* bump label size a bit */
+div[data-testid="stButton"] button p {
+    font-size: 1.15rem !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+
+
+
+
+
 # refresh local refs in case we just regenerated:
 incl_selected = list(crit_state.get("include", []))
 excl_selected = list(crit_state.get("exclude", []))
@@ -168,31 +196,31 @@ if year_to is None:
 
 # -------- year range --------
 
-st.subheader("Time window (optional)")
-yr1, yr2 = st.columns(2)
-with yr1:
-    year_from = st.number_input(
-        "From year",
-        min_value=1990,
-        max_value=2100,
-        value=int(year_from),
-        step=1,
-        help="Only include studies published on/after this year (optional)."
-    )
-with yr2:
-    year_to   = st.number_input(
-        "To year",
-        min_value=1990,
-        max_value=2100,
-        value=int(year_to),
-        step=1,
-        help="Only include studies published on/before this year (optional)."
-    )
+# st.subheader("Time window (optional)")
+# yr1, yr2 = st.columns(2)
+# with yr1:
+#     year_from = st.number_input(
+#         "From year",
+#         min_value=1990,
+#         max_value=2100,
+#         value=int(year_from),
+#         step=1,
+#         help="Only include studies published on/after this year (optional)."
+#     )
+# with yr2:
+#     year_to   = st.number_input(
+#         "To year",
+#         min_value=1990,
+#         max_value=2100,
+#         value=int(year_to),
+#         step=1,
+#         help="Only include studies published on/before this year (optional)."
+#     )
 
-if year_from > year_to:
-    st.warning("`From year` must be ≤ `To year`.")
+# if year_from > year_to:
+#     st.warning("`From year` must be ≤ `To year`.")
 
-st.markdown("---")
+# st.markdown("---")
 
 # -------- criteria editing (with delete buttons) --------
 
@@ -207,16 +235,17 @@ edited_excl = []
 # LEFT: Inclusion
 with cols_main[0]:
     st.markdown("**Inclusion criteria**")
-    st.caption("Edit wording directly. Click 🗑 to remove a rule. Describes when to KEEP a study.")
+    st.caption("Edit wording directly. Click 🗑 to remove a rule.")
 
     for i, rule in enumerate(incl_selected):
         row_c1, row_c2 = st.columns([0.9, 0.1], gap="small")
 
         with row_c1:
-            txt = st.text_input(
+            txt = st.text_area(
                 f"incl_txt_input_{i}",
                 value=rule,
                 key=f"incl_txt_key_{i}",
+                height=64,
                 label_visibility="collapsed",
             )
 
@@ -230,16 +259,17 @@ with cols_main[0]:
 # RIGHT: Exclusion
 with cols_main[1]:
     st.markdown("**Exclusion criteria**")
-    st.caption("Edit wording directly. Click 🗑 to remove a rule. Describes when to DISCARD a study.")
+    st.caption("Edit wording directly. Click 🗑 to remove a rule.")
 
     for j, rule in enumerate(excl_selected):
         row_c1, row_c2 = st.columns([0.9, 0.1], gap="small")
 
         with row_c1:
-            txt = st.text_input(
+            txt = st.text_area(
                 f"excl_txt_input_{j}",
                 value=rule,
                 key=f"excl_txt_key_{j}",
+                height=64,
                 label_visibility="collapsed",
             )
 
@@ -350,13 +380,13 @@ md_lines.append("")
 md_lines.append("## Years")
 md_lines.append(f"- {year_from}–{year_to}")
 
-st.markdown("### Download criteria (Markdown)")
-st.download_button(
-    "⬇️ Download criteria.md",
-    data="\n".join(md_lines),
-    file_name="slr_criteria.md",
-    mime="text/markdown",
-    use_container_width=True,
-)
+# st.markdown("### Download criteria (Markdown)")
+# st.download_button(
+#     "⬇️ Download criteria.md",
+#     data="\n".join(md_lines),
+#     file_name="slr_criteria.md",
+#     mime="text/markdown",
+#     use_container_width=True,
+# )
 
 st.info("Next planning step: **Step 5 – Quality assessment checklist**.")
