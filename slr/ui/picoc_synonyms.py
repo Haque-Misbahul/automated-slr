@@ -65,12 +65,13 @@ def _sbert_filter(
 
 # --- PICOC short definitions for hover help icons ---
 PICOC_HELP = {
-    "Population":   "What is being studied (subjects/artifacts/datasets).",
-    "Intervention": "Technique or approach under study (the thing you apply).",
-    "Comparison":   "Baselines or alternatives used for comparison.",
-    "Outcome":      "Measures/effects to evaluate (e.g., accuracy, runtime).",
-    "Context":      "Setting or environment (domain, platform, constraints).",
+    "Population":   "Who/what is targeted in the studies (roles, systems, datasets, domains).",
+    "Intervention": "Technique or approach being applied or evaluated.",
+    "Comparison":   "Baselines or alternative techniques for comparison (if any).",
+    "Outcome":      "Effects or measures of interest (e.g., accuracy, runtime, effort).",
+    "Context":      "Setting or environment (application domain, industry/academia, platform, constraints).",
 }
+
 
 # ---------------- UI setup ----------------
 st.set_page_config(page_title="Planning → Step 1: PICOC & Synonyms", layout="wide")

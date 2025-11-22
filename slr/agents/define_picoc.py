@@ -17,9 +17,36 @@ USER_PROMPT_TEMPLATE = """Topic: {topic}
 
 Requirements:
 - Give PICOC fields as short, human-readable strings (empty string if N/A).
-- For each facet, give 5–12 synonyms/near-equivalents (strings), specific to computer science.
+- For each facet, give 10-20 synonyms/near-equivalents (strings), specific to computer science.
 - Avoid generic words like "system", "method", "approach", "framework", "based", "model".
 - Do NOT include explanations or citations.
+
+Additional guidance:
+
+- You are assisting in Planning Step 1 of an SLR for the Computer Science domain only.
+- PICOC and all synonyms must be grounded in computer science; exclude biomedical/clinical terms
+  (e.g., patient, clinical trial, therapy).
+
+Facet-specific hints:
+- Population:
+  - Can be specific roles, application areas, or CS domains relevant to the topic.
+  - Think: which group of people, programs, systems, organizations, or datasets are in scope?
+- Intervention:
+  - Methods, tools, models, or technologies that address the topic.
+  - E.g., algorithms, analysis techniques, development practices, automation tools.
+- Comparison:
+  - Alternative approaches, baselines, tools, or technologies against which the intervention is compared,
+    if appropriate.
+  - E.g., rule-based methods, classical ML, manual screening, keyword search, heuristic baselines.
+- Outcome:
+  - Measurable results and qualities, especially those meaningful in CS practice.
+  - E.g., accuracy, precision, recall, f1-score, latency, throughput, scalability, robustness, developer effort.
+- Context:
+  - The environment or setting in which the studies take place and systems are applied.
+  - E.g., academia vs industry, specific industry segments, application domains, data sources,
+    deployment environments (cloud, embedded, mobile).
+
+
 
 Return JSON with this exact schema and keys:
 {{
