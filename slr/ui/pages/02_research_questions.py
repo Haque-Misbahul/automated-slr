@@ -67,7 +67,16 @@ if "rq_notes" not in st.session_state:
     st.session_state["rq_notes"] = ""
 
 # --- 1) Generate RQs button (AI) ---
-if st.button("Generate 3 RQs from current PICOC + synonyms", use_container_width=True):
+c1, c_mid, c3 = st.columns([1, 3, 1])
+
+with c_mid:
+    gen_rq_clicked = st.button(
+        "Generate 3 RQs from current PICOC + synonyms",
+        use_container_width=True,
+        help="Click to generate 3 draft research questions from the current PICOC and synonyms",
+    )
+
+if gen_rq_clicked:
     with st.spinner("Drafting research questions from PICOC and curated synonyms..."):
         try:
             enriched_context = _merge_picoc_with_synonyms(ai_picoc, selected_syns)
@@ -79,6 +88,24 @@ if st.button("Generate 3 RQs from current PICOC + synonyms", use_container_width
 
     st.session_state["rqs"] = payload.get("rqs", [])
     st.session_state["rq_notes"] = payload.get("notes", "")
+
+
+
+st.markdown("""
+<style>
+/* Make ALL buttons on this page light sky blue + bigger label */
+div[data-testid="stButton"] button {
+    background-color: #e0f4ff !important;  /* light sky blue */
+    border-color: #b5ddff !important;      /* slightly darker border */
+}
+
+/* bump label size a bit */
+div[data-testid="stButton"] button p {
+    font-size: 1.15rem !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 
 # convenience local vars (live view)
 rqs = st.session_state.get("rqs", [])

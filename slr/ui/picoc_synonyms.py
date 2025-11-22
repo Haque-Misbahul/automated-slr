@@ -108,11 +108,22 @@ def info_icon(help_text: str, key: str):
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------------- Generate PICOC + synonyms ----------------
-if st.button("Generate PICOC & Synonyms (AI)", use_container_width=True):
+# ---------------- Generate PICOC + synonyms ----------------
+c1, c_mid, c3 = st.columns([1, 3, 1])
+
+with c_mid:
+    gen_clicked = st.button(
+        "Generate PICOC & Synonyms (AI)",
+        use_container_width=True,
+        help="Click to generate PICOC and facet-wise synonyms with the LLM",
+    )
+
+if gen_clicked:
     seed = topic.strip()
     if not seed:
         st.warning("Please enter a topic/keyword first.")
         st.stop()
+
     with st.spinner("Calling LLM (gpt-oss-120b) to define PICOC and facet synonyms..."):
         try:
             data = run_define_picoc(seed)  # returns {"picoc": {...}, "synonyms": {...}}
@@ -120,11 +131,29 @@ if st.button("Generate PICOC & Synonyms (AI)", use_container_width=True):
             st.error(f"LLM call failed: {e}")
             st.stop()
 
+
     # persist for later steps/pages
     st.session_state["topic"] = seed
     st.session_state["ai_picoc"] = data.get("picoc", {})
     st.session_state["ai_syns_original"] = data.get("synonyms", {})  # keep original
     st.session_state["selected_synonyms"] = {}   # reset selections for a fresh run
+
+st.markdown("""
+<style>
+/* Make ALL buttons on this page light sky blue + bigger label */
+div[data-testid="stButton"] button {
+    background-color: #e0f4ff !important;  /* light sky blue */
+    border-color: #b5ddff !important;      /* slightly darker border */
+}
+
+/* bump label size a bit */
+div[data-testid="stButton"] button p {
+    font-size: 1.15rem !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
 
 # ---------------- Show results if available ----------------
 ai_picoc = st.session_state.get("ai_picoc")
