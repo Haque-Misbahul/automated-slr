@@ -128,7 +128,7 @@ c1, c_mid, c3 = st.columns([1, 3, 1])
 
 with c_mid:
     if st.button(
-        " Generate draft inclusion/exclusion now",
+        " Generate inclusion/exclusion Criteria",
         use_container_width=True,
         help="Click to generate Inclusion/Exclusion criteria",
     ):
