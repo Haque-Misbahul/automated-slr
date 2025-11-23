@@ -8,9 +8,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.
 
 import streamlit as st
 from slr.llm.client import LLMClient
+from slr.ui.theme import inject_css
 
 st.set_page_config(page_title="Conducting → Step 4: Quality Assessment (AI)", layout="wide")
-
+inject_css()
 st.markdown(
     "<h2 style='margin-top:20px;'>🧪 Conducting • Step 4: Quality assessment (AI)</h2>",
     unsafe_allow_html=True,
@@ -135,7 +136,7 @@ else:
             weights.append(1.0)
 
 scheme = (qcheck.get("scheme") or "Y/P/N").upper()  # "Y/N" or "Y/P/N"
-min_total_default = _coerce_float(qcheck.get("min_total", 0.0), 0.0)
+# min_total_default = _coerce_float(qcheck.get("min_total", 0.0), 0.0)
 
 if not questions:
     st.warning("Your checklist has no questions marked to keep.")
@@ -144,30 +145,38 @@ if not questions:
 max_possible = sum(weights)  # if every answer == 'Y' (score=1)
 
 # -----------------------------------------------------------------------------
-# 2) Scoring controls
+# 2) Scoring controls (fixed Y/P/N, adjustable cut-off)
 # -----------------------------------------------------------------------------
 
+# Fixed mapping – same as Planning Step 5
+y_val = 1.0
+p_val = 0.5 if "P" in scheme else 0.0
+n_val = 0.0
+
+# Prefer Planning cutoff if available, fall back to any legacy 'min_total'
+raw_min = qcheck.get("cutoff", qcheck.get("min_total", 0.0))
+min_total_default = _coerce_float(raw_min, 0.0)
+
 st.markdown("### Scoring settings")
-c1, c2, c3, c4 = st.columns([1, 1, 1, 2])
 
-with c1:
-    y_val = st.number_input("Score for Y", min_value=0.0, max_value=2.0, step=0.1, value=1.0)
-with c2:
-    p_val_default = 0.5 if "P" in scheme else 0.0
-    p_val = st.number_input("Score for P", min_value=0.0, max_value=1.0, step=0.1, value=p_val_default, help="Ignored if scheme is Y/N.")
-with c3:
-    n_val = st.number_input("Score for N", min_value=0.0, max_value=1.0, step=0.1, value=0.0)
-with c4:
-    cut_off = st.number_input(
-        "Minimum total score to include",
-        min_value=0.0,
-        max_value=max_possible,
-        step=0.1,
-        value=float(min_total_default if min_total_default > 0 else max_possible * 0.5),
-        help=f"Max possible score (all Y): {max_possible:g}",
-    )
+# Only one control: minimum total score
+cut_off = st.number_input(
+    "Minimum total score to include",
+    min_value=0.0,
+    max_value=max_possible,
+    step=0.1,
+    value=float(min_total_default if min_total_default > 0 else max_possible * 0.5),
+    help=(
+        f"Max possible score (all Y): {max_possible:g}. "
+        "You can adjust this threshold here if needed."
+    ),
+)
 
-st.caption(f"**Checklist size:** {len(questions)} • **Max possible score:** {max_possible:g} • **Scheme:** {scheme}")
+st.caption(
+    f"Scoring uses fixed mapping from Planning: **Y = 1.0, P = 0.5, N = 0.0** "
+    f"(scheme: {scheme}).  "
+    f"Checklist size: **{len(questions)}**, max possible score: **{max_possible:g}**."
+)
 
 # -----------------------------------------------------------------------------
 # 3) Model settings
@@ -285,13 +294,13 @@ def _score_papers(papers: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         total = float(sum(per_q))
         pct = float(0.0 if max_possible <= 0 else (total / max_possible) * 100.0)
 
-        decision = parsed.get("decision", "").lower()
-        # normalize decision against cut_off
-        if decision not in ("include", "exclude", "unsure"):
-            # derive from cut_off
-            decision = "include" if total >= float(cut_off) else "exclude"
+                # LLM's own decision (for info only)
+        ai_decision_raw = (parsed.get("decision", "") or "").lower()
 
-        # attach QA to paper
+        # Authoritative decision: score vs cut-off
+        decision = "include" if total >= float(cut_off) else "exclude"
+
+        # attach QA + decisions to paper
         enriched = dict(p)
         enriched["qa"] = {
             "answers": answers[:len(questions)],
@@ -300,7 +309,11 @@ def _score_papers(papers: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         }
         enriched["total_score"] = round(total, 4)
         enriched["total_score_pct"] = round(pct, 2)
+        # score-based decision used for inclusion/exclusion
         enriched["decision"] = decision
+        # keep the model's own decision separately
+        enriched["ai_decision_raw"] = ai_decision_raw or "unsure"
+
 
         out.append(enriched)
         prog.progress(idx / max(1, len(papers)), text=f"Scored {idx}/{len(papers)}")
@@ -330,18 +343,19 @@ if not scored_rows:
 # Derive buckets from current cut_off (re-derivable live)
 incl, excl, unsure = [], [], []
 for r in scored_rows:
-    dec = (r.get("decision","") or "").lower()
-    # Re-apply cut off if decision ambiguous
-    if dec not in ("include","exclude","unsure"):
-        dec = "include" if float(r.get("total_score",0.0)) >= float(cut_off) else "exclude"
-    if dec == "include" and float(r.get("total_score",0.0)) < float(cut_off):
-        dec = "exclude"
-    if dec == "include":
+    score = float(r.get("total_score", 0.0))
+    ai_dec = (r.get("ai_decision_raw", "") or "").lower()
+
+    if score >= float(cut_off):
+        # score passes threshold → always included
         incl.append(r)
-    elif dec == "unsure":
+    elif ai_dec == "unsure":
+        # below threshold, but model flagged as unsure → keep separate
         unsure.append(r)
     else:
+        # below threshold and model basically negative → exclude
         excl.append(r)
+
 
 st.success(f"AI include: **{len(incl)}**  |  AI exclude (low quality): **{len(excl)}**  |  AI unsure: **{len(unsure)}**")
 
@@ -354,8 +368,14 @@ st.session_state["quality_unsure"] = unsure
 def _preview_list(name: str, items: List[Dict[str, Any]]):
     with st.expander(f"Preview {name} ({len(items)})", expanded=False):
         for r in items[:200]:  # cap rendering
-            st.markdown(f"**[{r.get('title','(no title)')}]({r.get('link','')})**")
-            st.caption(f"Score: {r.get('total_score')} / {max_possible:g}  ({r.get('total_score_pct')}%)  • Decision: {r.get('decision')}")
+            score_dec = r.get("decision")
+            ai_dec = r.get("ai_decision_raw", "")
+            extra = f" • LLM decision: {ai_dec}" if ai_dec else ""
+            st.caption(
+                f"Score: {r.get('total_score')} / {max_possible:g} "
+                f"({r.get('total_score_pct')}%)  • Score-based decision: {score_dec}{extra}"
+            )
+
             if r.get("qa"):
                 qa = r["qa"]
                 for i, (ans, why) in enumerate(zip(qa.get("answers", []), qa.get("justifications", [])), start=1):
