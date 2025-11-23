@@ -72,24 +72,40 @@ ws_work = st.session_state["qc_ws"]
 # --------------- AI-assisted generation ---------------
 st.subheader("AI-assisted quality checklist generation")
 
-with st.expander("✨ Generate checklist from search keywords (recommended)", expanded=True):
-    default_seed = topic or ""
-    search_keywords = st.text_area(
-        "Search keywords / Boolean query / short description",
-        value=default_seed,
-        placeholder='e.g., "code review" AND "defect detection" AND (tool OR automation)',
-        help="The AI will use this plus your PICOC and screening criteria (Step 4) "
-             "to propose a short quality checklist.",
+# with st.expander("✨ Generate checklist from search keywords (recommended)", expanded=True):
+#     default_seed = topic or ""
+#     search_keywords = st.text_area(
+#         "Search keywords / Boolean query / short description",
+#         value=default_seed,
+#         placeholder='e.g., "code review" AND "defect detection" AND (tool OR automation)',
+#         help="The AI will use this plus your PICOC and screening criteria (Step 4) "
+#              "to propose a short quality checklist.",
+#     )
+
+#     # Fixed to 5 checklist questions (no slider)
+#     st.caption("The AI will generate exactly **5** short, non-redundant questions.")
+#     n_questions = 5
+
+
+# We skip showing the expander; just derive inputs silently
+default_seed = topic or ""
+search_keywords = default_seed       # use topic as the hidden query
+n_questions = 5                      # always generate exactly 5 questions
+
+
+
+
+   # --- Generate quality checklist button (AI) ---
+c1, c_mid, c3 = st.columns([1, 3, 1])
+
+with c_mid:
+    qc_clicked = st.button(
+        "Generate quality checklist",
+        use_container_width=True,
+        help="Click to generate a short quality checklist from topic, PICOC, criteria, and keywords",
     )
 
-    col_ai_l, col_ai_r = st.columns([0.7, 0.3], gap="small")
-    with col_ai_l:
-        n_questions = st.slider("Number of checklist questions", 5, 12, value=7)
-    with col_ai_r:
-        # For now we don't expose temperature; keep behaviour stable
-        st.caption("Questions are kept short and non-redundant.")
-
-    if st.button("✨ Generate quality checklist", use_container_width=True):
+    if qc_clicked:
         if not search_keywords.strip() and not topic:
             st.error("Please provide at least a topic or some search keywords.")
         else:
@@ -111,6 +127,7 @@ with st.expander("✨ Generate checklist from search keywords (recommended)", ex
                 st.session_state["qc_ws"] = new_ws
 
                 st.success(f"Generated {len(new_qs)} questions. Refine them below.")
+
                 # rerun to refresh widgets
                 if hasattr(st, "rerun"):
                     st.rerun()
@@ -121,6 +138,21 @@ with st.expander("✨ Generate checklist from search keywords (recommended)", ex
                 st.error(f"Checklist generation failed: {e}")
 
 st.markdown("---")
+
+st.markdown("""
+<style>
+/* Make ALL buttons on this page light sky blue + bigger label */
+div[data-testid="stButton"] button {
+    background-color: #e0f4ff !important;  /* light sky blue */
+    border-color: #b5ddff !important;      /* slightly darker border */
+}
+
+/* bump label size a bit */
+div[data-testid="stButton"] button p {
+    font-size: 1.15rem !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # --------------- Scoring scheme (fixed) ---------------
 st.subheader("Scoring scheme")
