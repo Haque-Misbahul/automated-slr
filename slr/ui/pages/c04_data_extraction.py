@@ -1,6 +1,9 @@
 # slr/ui/pages/c03_data_extraction.py
+
 import sys, os, io, csv, json, re
 from typing import List, Dict
+
+import requests  # <-- for fetching PDFs
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 import streamlit as st
@@ -70,6 +73,37 @@ def pick_first(*vals) -> str:
             return s
     return ""
 
+def guess_pdf_url(paper: Dict) -> str:
+    """
+    Try to guess a direct PDF URL for this paper.
+
+    - Prefer an explicit 'pdf_url' field.
+    - If it's an arXiv abs URL, convert to pdf URL.
+    - If any candidate already ends with .pdf, use it.
+    """
+    candidates = [
+        paper.get("pdf_url"),
+        paper.get("url"),
+        paper.get("link"),
+    ]
+
+    for u in candidates:
+        if not u:
+            continue
+        u = str(u).strip()
+
+        # arXiv abs -> pdf
+        if "arxiv.org/abs/" in u and not u.lower().endswith(".pdf"):
+            u = u.replace("arxiv.org/abs/", "arxiv.org/pdf/")
+            if not u.lower().endswith(".pdf"):
+                u = u + ".pdf"
+
+        if u.lower().endswith(".pdf"):
+            return u
+
+    return ""
+
+
 # ---------- load included studies ----------
 topic = st.session_state.get("topic", "")
 if topic:
@@ -133,6 +167,8 @@ with st.expander("Show fields", expanded=False):
 
 # ---------- session storage for entered data ----------
 extracted: Dict[str, Dict] = st.session_state.get("extracted_data", {})
+# store raw PDF bytes by paper id when fetched
+pdf_store: Dict[str, bytes] = st.session_state.get("extracted_pdfs", {})
 
 # ---------- paper navigator ----------
 st.markdown("### Extract per paper")
@@ -186,17 +222,58 @@ current_record.update(extracted.get(pid, {}))
 
 # Helpful heading with link if available
 paper_link = pick_first(paper.get("url"), paper.get("link"))
-title_for_header = paper.get("title","(no title)")
+title_for_header = paper.get("title", "(no title)")
 if paper_link:
     st.markdown(f"**Paper {idx+1} / {len(included)}** — [{title_for_header}]({paper_link})")
 else:
     st.markdown(f"**Paper {idx+1} / {len(included)}** — {title_for_header}")
 
+# ---------- PDF fetch / download ----------
+pdf_url = guess_pdf_url(paper)
+
+if pdf_url:
+    st.markdown(f"**PDF candidate:** [{pdf_url}]({pdf_url})")
+
+    col_pdf_fetch, col_pdf_dl = st.columns([1, 1])
+
+    with col_pdf_fetch:
+        if st.button("📥 Fetch PDF", key=f"fetch_pdf_{pid}", use_container_width=True):
+            try:
+                resp = requests.get(pdf_url, timeout=25)
+                resp.raise_for_status()
+                content_type = resp.headers.get("Content-Type", "")
+
+                if "pdf" not in content_type.lower() and not pdf_url.lower().endswith(".pdf"):
+                    st.warning(
+                        f"Fetched URL but it does not look like a PDF "
+                        f"(Content-Type: {content_type})."
+                    )
+
+                pdf_store[pid] = resp.content
+                st.session_state["extracted_pdfs"] = pdf_store
+                st.success("PDF fetched and stored in session.")
+            except Exception as e:
+                st.error(f"Failed to fetch PDF: {e}")
+
+    with col_pdf_dl:
+        pdf_bytes = pdf_store.get(pid)
+        if pdf_bytes:
+            st.download_button(
+                "⬇️ Download fetched PDF",
+                data=pdf_bytes,
+                file_name=f"{pid or f'paper_{idx}'}.pdf",
+                mime="application/pdf",
+                use_container_width=True,
+                key=f"dl_pdf_{pid}",
+            )
+else:
+    st.info("No obvious PDF URL found for this paper.")
+
 # ---------- render form ----------
 with st.form(key=f"extract_form_{pid}", clear_on_submit=False):
     new_values: Dict[str, str] = {"id": pid}
     for f in fields:
-        fname = f.get("name", f.get("key",""))
+        fname = f.get("name", f.get("key", ""))
         fkey = f.get("key", fname.lower().replace(" ", "_"))
         ftype = (f.get("type", "text") or "text").lower()
         freq  = bool(f.get("required", False))
@@ -286,5 +363,6 @@ with c3:
 
 st.caption(
     "Widgets are keyed per paper so they reset on navigation. "
-    "Authors/Year/URL/Abstract are prefilled when available from arXiv metadata."
+    "Authors/Year/URL/Abstract are prefilled when available from arXiv metadata. "
+    "You can also fetch and download PDFs per paper from this page."
 )
