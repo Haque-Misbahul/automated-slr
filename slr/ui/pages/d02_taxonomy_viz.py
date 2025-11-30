@@ -1,12 +1,13 @@
 # slr/ui/pages/d02_taxonomy_viz.py
 import sys, os, json, io, csv
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+from typing import Optional, List, Dict
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 import graphviz
-from typing import Optional, List, Dict
 
 st.set_page_config(page_title="Taxonomy Visualization", layout="wide")
 
@@ -27,24 +28,35 @@ def build_graphviz(
     parent_id: Optional[str] = None,
     idx: Optional[List[int]] = None,
 ):
+    """
+    Recursively add nodes/edges to a Graphviz diagram.
+    Each node shows the name and the number of leaf papers beneath it.
+    """
     idx = idx or []
     node_id = "n_" + "_".join(map(str, idx)) if idx else "root"
     label = node.get("name", "Unnamed")
     leaves = count_leaves(node)
+
     dot.node(
         node_id,
         f"{label}\n({leaves} leaf{'s' if leaves == 1 else 's'})",
         shape="box",
         style="rounded,filled",
-        fillcolor="#F2F7FF"
+        fillcolor="#F2F7FF",
     )
+
     if parent_id is not None:
         dot.edge(parent_id, node_id)
+
     for i, ch in enumerate(node.get("children") or []):
         build_graphviz(dot, ch, node_id, idx + [i])
 
 
 def taxonomy_to_rows(node: dict, path: Optional[List[str]] = None) -> List[Dict]:
+    """
+    Flatten taxonomy into rows: each leaf gives a row with a `path` list and a size=1.
+    Used for treemap / sunburst.
+    """
     path = path or []
     name = node.get("name", "Unnamed")
     ch = node.get("children") or []
@@ -56,17 +68,33 @@ def taxonomy_to_rows(node: dict, path: Optional[List[str]] = None) -> List[Dict]
     return rows
 
 
-def df_from_assignments(assignments: list[dict]) -> pd.DataFrame:
-    """Expect each assignment: {'paper_id': 'paper_0', 'title': '...', 'path': 'X / Y / Z'}"""
-    return pd.DataFrame(assignments)
+def df_from_assignments(assignments: List[Dict]) -> pd.DataFrame:
+    """Expect each assignment: {'paper_id': 'paper_0', 'title': '...', 'path': ['X','Y','Z']}"""
+    # Make path a printable string
+    rows = []
+    for a in assignments:
+        row = dict(a)
+        if isinstance(row.get("path"), list):
+            row["path_str"] = " / ".join(row["path"])
+        rows.append(row)
+    return pd.DataFrame(rows)
+
 
 # --------------------------------------------------------------------------------------
 # Load taxonomy from session or upload
 # --------------------------------------------------------------------------------------
 st.markdown("## 📚 Taxonomy Visualization")
 
-tree = st.session_state.get("taxonomy_tree")  # set by d01_taxonomy.py
+# NEW: prefer the wrapped tree & assignments prepared in d01_Taxonomy
+tree = st.session_state.get("taxonomy_tree")
 assignments = st.session_state.get("taxonomy_assignments", [])
+
+# Fallback: if user opened this page directly after loading taxonomy_ai
+if tree is None:
+    ai_data = st.session_state.get("taxonomy_ai")
+    if isinstance(ai_data, dict):
+        tree = ai_data.get("taxonomy")
+        assignments = ai_data.get("mapping", [])
 
 with st.expander("Load taxonomy from file (optional)", expanded=False):
     up = st.file_uploader("Upload taxonomy.json", type=["json"])
@@ -82,26 +110,34 @@ with st.expander("Load taxonomy from file (optional)", expanded=False):
             st.error(f"Failed to parse JSON: {e}")
 
 if not tree:
-    st.warning("No taxonomy in memory. Generate it first on the 'taxonomy' page or upload a taxonomy.json above.")
+    st.warning(
+        "No taxonomy in memory. Generate it first on the 'Taxonomy generation (AI)' page "
+        "or upload a taxonomy.json above."
+    )
     st.stop()
 
 # --------------------------------------------------------------------------------------
-# Graphviz Tree
+# Graphviz Tree (your hand-drawn style)
 # --------------------------------------------------------------------------------------
-st.markdown("### 🌳 Taxonomy (Tree)")
+st.markdown("### 🌳 Taxonomy (Tree view)")
+
 col_gv, col_info = st.columns([2, 1])
 with col_gv:
     try:
-        dot = graphviz.Digraph("taxonomy", graph_attr={"rankdir": "TB"}, node_attr={"fontname": "Inter"})
+        dot = graphviz.Digraph(
+            "taxonomy",
+            graph_attr={"rankdir": "TB"},
+            node_attr={"fontname": "Inter"},
+        )
         build_graphviz(dot, tree)
         st.graphviz_chart(dot, use_container_width=True)
     except Exception as e:
-        st.error(f"Graphviz rendering failed. Ensure system Graphviz is installed. Error: {e}")
+        st.error(f"Graphviz rendering failed. Error: {e}")
 
 with col_info:
-    st.markdown("**Root name:**")
+    st.markdown("**Root name (current topic):**")
     st.code(tree.get("name", "root"))
-    st.markdown("**Leaves:**")
+    st.markdown("**Number of leaf nodes (deepest categories):**")
     st.code(count_leaves(tree))
     st.markdown("**JSON preview:**")
     st.json(tree)
@@ -120,7 +156,6 @@ fig_tm = px.treemap(
     df,
     path=[f"lvl{i}" for i in range(max_depth)],
     values="size",
-    color_discrete_sequence=px.colors.qualitative.Pastel,
 )
 fig_tm.update_layout(margin=dict(l=0, r=0, t=30, b=0))
 st.plotly_chart(fig_tm, use_container_width=True)
@@ -130,7 +165,6 @@ fig_sb = px.sunburst(
     df,
     path=[f"lvl{i}" for i in range(max_depth)],
     values="size",
-    color_discrete_sequence=px.colors.qualitative.Pastel,
 )
 fig_sb.update_layout(margin=dict(l=0, r=0, t=30, b=0))
 st.plotly_chart(fig_sb, use_container_width=True)
@@ -177,7 +211,7 @@ with c3:
             use_container_width=True,
         )
     except Exception:
-        st.caption("Install `kaleido` for PNG export.")
+        st.caption("Install `kaleido` for PNG export if you want PNG export.")
 
 # 4) Sunburst PNG (needs kaleido)
 with c4:
@@ -191,4 +225,4 @@ with c4:
             use_container_width=True,
         )
     except Exception:
-        st.caption("Install `kaleido` for PNG export.")
+        st.caption("Install `kaleido` for PNG export if you want PNG export.")

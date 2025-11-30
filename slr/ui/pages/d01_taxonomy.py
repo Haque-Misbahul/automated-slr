@@ -227,27 +227,46 @@ if st.button("🚀 Generate taxonomy (AI)", use_container_width=True):
                 txt = ""
             full_texts.append(txt)
 
-    with st.spinner("Calling LLM to draft taxonomy..."):
-        data = generate_taxonomy(
-            titles=titles,
-            paper_ids=paper_ids,
-            abstracts=abstracts if abs_len > 0 else None,
-            picoc=ai_picoc,
-            rqs=rq_list,
-            depth=int(depth),
-            max_children_per_node=int(max_children),
-            max_papers=int(max_papers),
-            abs_snip_len=int(abs_len),
-            full_texts=full_texts,
-            full_snip_len=1500,  # keep snippets shorter than full papers
-        )
 
+        with st.spinner("Calling LLM to draft taxonomy..."):
+            data = generate_taxonomy(
+                titles=titles,
+                paper_ids=paper_ids,
+                abstracts=abstracts if abs_len > 0 else None,
+                picoc=ai_picoc,
+                rqs=rq_list,
+                depth=int(depth),
+                max_children_per_node=int(max_children),
+                max_papers=int(max_papers),
+                abs_snip_len=int(abs_len),
+            )
+
+    # Save raw LLM output
     st.session_state["taxonomy_ai"] = data
-    if isinstance(data, dict) and data.get("taxonomy", {}).get("children"):
+
+    # ---- NEW: prepare tree + assignments for visualization ----
+    topic = st.session_state.get("topic", "") or "Root topic"
+    raw_tree = data.get("taxonomy", {"name": "root", "children": []})
+
+    # Wrap LLM root under a node named after the current topic
+    # so the top box in the viz is always the topic.
+    if raw_tree.get("name") != topic:
+        tree_for_viz = {
+            "name": topic,
+            "children": [raw_tree],
+        }
+    else:
+        tree_for_viz = raw_tree
+
+    st.session_state["taxonomy_tree"] = tree_for_viz
+    st.session_state["taxonomy_assignments"] = data.get("mapping", [])
+
+    # -----------------------------------------------------------
+
+    if data.get("taxonomy", {}).get("children"):
         st.success("Draft taxonomy generated.")
     else:
         st.warning(f"LLM returned empty taxonomy. Notes: {data.get('notes')}")
-
     force_rerun()
 
 # ------------------------------------------------------------------------
