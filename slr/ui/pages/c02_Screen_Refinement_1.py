@@ -8,9 +8,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.
 
 import streamlit as st
 from slr.llm.client import LLMClient
+from slr.ui.theme import inject_css
 
 st.set_page_config(page_title="Conducting → Step 3: Selection & Refinement", layout="wide")
-
+inject_css()
 # -------------------------------------------------------------------
 # Helpers
 # -------------------------------------------------------------------

@@ -4,9 +4,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.
 
 import streamlit as st
 from slr.query.builder import build_boolean_query
+from slr.ui.theme import inject_css
 
 st.set_page_config(page_title="Conducting → Build & Gather (arXiv)", layout="wide")
-
+inject_css()
 st.markdown("""
 <style>
 div[data-testid="stHorizontalBlock"] > div { padding-right:.35rem !important; }
