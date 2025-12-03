@@ -16,14 +16,15 @@ def _format_user_prompt(
     titles: List[str],
     paper_ids: List[str],
     abstracts: Optional[List[str]] = None,
+    full_texts: Optional[List[str]] = None,   # 👈 NEW
     picoc: Optional[Dict[str, str]] = None,
     rqs: Optional[List[str]] = None,
     depth: int = 2,
     max_children_per_node: int = 6,
     abs_snip_len: int = 220,
-    full_texts: Optional[List[str]] = None,
-    full_snip_len: int = 1500,
+    full_snip_len: int = 800,                 # 👈 NEW
 ) -> str:
+
     """
     Build the user prompt for taxonomy generation.
 
@@ -57,21 +58,29 @@ def _format_user_prompt(
     lines.append("Papers:")
     for i, title in enumerate(titles):
         abs_snip = ""
+        full_snip = ""
+
+        # Abstract snippet
         if abstracts and i < len(abstracts) and abstracts[i]:
             sn = abstracts[i].strip()
             if abs_snip_len > 0:
                 sn = sn[:abs_snip_len] + ("..." if len(sn) > abs_snip_len else "")
-            abs_snip = f" | abs: {sn}"
+            else:
+                sn = ""
+            abs_snip = f" | abs: {sn}" if sn else ""
 
-        full_snip = ""
+        # Full-text snippet from PDF
         if full_texts and i < len(full_texts) and full_texts[i]:
             ft = full_texts[i].strip()
             if full_snip_len > 0:
                 ft = ft[:full_snip_len] + ("..." if len(ft) > full_snip_len else "")
-            full_snip = f" | full: {ft}"
+            else:
+                ft = ""
+            full_snip = f" | full: {ft}" if ft else ""
 
         pid = paper_ids[i] if i < len(paper_ids) else f"paper_{i}"
         lines.append(f"- [{pid}] {title}{abs_snip}{full_snip}")
+
 
     lines.append("")
     lines.append("Return STRICT JSON with keys: taxonomy, mapping, notes.")
@@ -87,6 +96,7 @@ def generate_taxonomy(
     titles: List[str],
     paper_ids: List[str],
     abstracts: Optional[List[str]] = None,
+    full_texts: Optional[List[str]] = None,   # 👈 NEW
     picoc: Optional[Dict[str, str]] = None,
     rqs: Optional[List[str]] = None,
     depth: int = 2,
@@ -94,9 +104,9 @@ def generate_taxonomy(
     model: str = "gpt-oss-120b",
     max_papers: int = 60,
     abs_snip_len: int = 220,
-    full_texts: Optional[List[str]] = None,
-    full_snip_len: int = 1500,
+    full_snip_len: int = 800,                 # 👈 NEW
 ) -> Dict[str, Any]:
+
     """
     Call the LLM to produce a taxonomy + paper mapping with a small, retryable payload.
 
@@ -105,25 +115,28 @@ def generate_taxonomy(
     tokens reasonable.
     """
     # Trim payload (titles + ids + abstracts + full_texts) to reduce 502 risk
+        # Trim payload to reduce 502 risk
     if max_papers and len(titles) > max_papers:
         titles = titles[:max_papers]
         paper_ids = paper_ids[:max_papers]
         abstracts = abstracts[:max_papers] if abstracts else None
         full_texts = full_texts[:max_papers] if full_texts else None
 
+
     client = LLMClient(model=model)
     user = _format_user_prompt(
         titles=titles,
         paper_ids=paper_ids,
         abstracts=abstracts,
+        full_texts=full_texts,                    # 👈 NEW
         picoc=picoc,
         rqs=rqs,
         depth=int(depth),
         max_children_per_node=int(max_children_per_node),
         abs_snip_len=int(abs_snip_len),
-        full_texts=full_texts,
-        full_snip_len=int(full_snip_len),
+        full_snip_len=int(full_snip_len),         # 👈 NEW
     )
+
 
     try:
         raw = client.chat(

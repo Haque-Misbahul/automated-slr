@@ -214,6 +214,7 @@ with c4:
 # ------------------------------------------------------------------------
 # Generate taxonomy
 # ------------------------------------------------------------------------
+
 if st.button("🚀 Generate taxonomy (AI)", use_container_width=True):
     # Build full-text list from any fetched PDFs (same order as titles/paper_ids)
     full_texts: Optional[List[str]] = None
@@ -227,29 +228,28 @@ if st.button("🚀 Generate taxonomy (AI)", use_container_width=True):
                 txt = ""
             full_texts.append(txt)
 
-
-        with st.spinner("Calling LLM to draft taxonomy..."):
-            data = generate_taxonomy(
-                titles=titles,
-                paper_ids=paper_ids,
-                abstracts=abstracts if abs_len > 0 else None,
-                picoc=ai_picoc,
-                rqs=rq_list,
-                depth=int(depth),
-                max_children_per_node=int(max_children),
-                max_papers=int(max_papers),
-                abs_snip_len=int(abs_len),
-            )
+    with st.spinner("Calling LLM to draft taxonomy..."):
+        data = generate_taxonomy(
+            titles=titles,
+            paper_ids=paper_ids,
+            abstracts=abstracts if abs_len > 0 else None,
+            full_texts=full_texts,                  # 👈 NOW USED
+            picoc=ai_picoc,
+            rqs=rq_list,
+            depth=int(depth),
+            max_children_per_node=int(max_children),
+            max_papers=int(max_papers),
+            abs_snip_len=int(abs_len),
+            full_snip_len=800,                      # chars per paper from PDF
+        )
 
     # Save raw LLM output
     st.session_state["taxonomy_ai"] = data
 
-    # ---- NEW: prepare tree + assignments for visualization ----
+    # ---- prepare tree + assignments for visualization ----
     topic = st.session_state.get("topic", "") or "Root topic"
     raw_tree = data.get("taxonomy", {"name": "root", "children": []})
 
-    # Wrap LLM root under a node named after the current topic
-    # so the top box in the viz is always the topic.
     if raw_tree.get("name") != topic:
         tree_for_viz = {
             "name": topic,
@@ -260,8 +260,6 @@ if st.button("🚀 Generate taxonomy (AI)", use_container_width=True):
 
     st.session_state["taxonomy_tree"] = tree_for_viz
     st.session_state["taxonomy_assignments"] = data.get("mapping", [])
-
-    # -----------------------------------------------------------
 
     if data.get("taxonomy", {}).get("children"):
         st.success("Draft taxonomy generated.")
