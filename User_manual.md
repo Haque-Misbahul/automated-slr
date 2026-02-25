@@ -1,0 +1,142 @@
+````md
+# this is the user manual
+
+## NLP-Based Automation of Systematic Literature Reviews In Computer Science
+## User Manual (Implementation)
+
+---
+
+## 1. Overview
+This software is a locally deployable Streamlit application that supports parts of the Systematic Literature Review (SLR) process in Computer Science. It provides:
+• Planning support (PICOC, synonyms, search strings)
+• Conducting support (screening/refinement, taxonomy generation)
+The backend uses an LLM endpoint and SBERT for semantic similarity.
+
+---
+
+## 2. Requirements
+• Python 3.9
+• pip
+• Virtual environment tool (venv recommended)
+• Access to the LLM endpoint: https://kiste.informatik.tu-chemnitz.de/v1
+• Model to use: glm-4.5-air
+
+---
+
+## 3. Getting the Project Files (Two Options)
+Option A: Using the DVD (no cloning)
+1. 2. Copy the folder automated-slr/ from the DVD to your computer (recommended).
+Open a terminal inside that folder.
+Option B: Clone from GitHub
+
+```bash
+git clone https://github.com/Haque-Misbahul/automated-slr.git
+cd automated-slr
+````
+
+---
+
+## 4. Installation
+
+1. Create and activate a virtual environment
+
+Mac/Linux:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Windows (PowerShell):
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+2. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## 5. Configuration (Environment Variables)
+
+Set the following variables. Use your real API key locally; do not store it in public
+files.
+
+Mac/Linux:
+
+```bash
+export KISTE_API_KEY="YOUR_API_KEY_HERE"
+export OPENAI_BASE_URL="https://kiste.informatik.tu-chemnitz.de/v1"
+export OPENAI_MODEL="glm-4.5-air"
+```
+
+Windows (PowerShell):
+
+```powershell
+$env:KISTE_API_KEY="YOUR_API_KEY_HERE"
+$env:OPENAI_BASE_URL="https://kiste.informatik.tu-chemnitz.de/v1"
+$env:OPENAI_MODEL="glm-4.5-air"
+```
+
+Note: If your API key is not working try to connect via TU chemnitz netword or CISCO vpn
+gate by Tu chemnitz.
+
+---
+
+## 6. Run the Application
+
+Run the main Streamlit app:
+
+```bash
+streamlit run slr/ui/app.py
+```
+
+Open in your browser:
+[http://localhost:8501](http://localhost:8501)
+
+---
+
+## 7. Run Individual Pages (Optional)
+
+You can also start a single page directly (file name must match exactly):
+Example:
+
+```bash
+streamlit run slr/ui/picoc_synonyms.py
+```
+
+---
+
+## 8. Quick Usage Guide
+
+Step 1: PICOC & Synonyms
+• Enter PICOC values and generate synonyms
+• Edit the synonyms list and save outputs
+
+Step 2: Search String Builder
+• Generate Boolean search strings from PICOC/synonyms
+• Copy/export the search strings
+
+Step 3: Selection & Refinement
+• Import retrieved papers (metadata)
+• Screen/refine and export included/excluded sets
+
+Step 4: Taxonomy Generation
+• Generate taxonomy from selected papers
+• Export taxonomy results
+
+---
+
+## 9. Troubleshooting
+
+• Streamlit not found: pip install streamlit
+• API/auth errors: check KISTE_API_KEY and OPENAI_BASE_URL
+• Wrong model: ensure OPENAI_MODEL=glm-4.5-air is set
+
+```
+```
